@@ -1,0 +1,21 @@
+{
+  "name": "wedding-planner",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Trouwplanner Sten & Nyarayek - gedeelde, gesynchroniseerde versie",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@upstash/redis": "^1.34.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.10"
+  }
+}
