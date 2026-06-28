@@ -514,8 +514,8 @@ const EMPTY = {
   guestPres: {}, // overrides op "aanwezig"
   customGuests: [],
   // Budget v2 - grouped per offerte
-  sibizTarget: 14000, // budget voor de Sibiz-offerte (locatie + catering)
-  sibizPaidPct: 25, // 25% aanbetaald
+  budget: 25000, // totaal trouwbudget
+  sibizPaid: 1946, // werkelijk aanbetaald op Sibiz (25% aanbetaling op de niet-contante helft)
   sibizOverrides: {}, // edits op de offerteregels
   sibizCustom: [], // toegevoegde regels in de Sibiz-offerte
   posten: SEED_POSTEN, // overige kosten (begroot, nog geen offerte)
@@ -532,6 +532,8 @@ function useStore() {
   const dirty = useRef(false);  // we have local edits not yet saved
   const saving = useRef(false); // a save is in flight
   const adopting = useRef(false); // we just adopted remote -> skip the save it triggers
+  const dataRef = useRef(data);
+  dataRef.current = data;
 
   // Initial load from the shared store
   useEffect(() => {
@@ -578,7 +580,7 @@ function useStore() {
       } finally {
         saving.current = false;
       }
-    }, 800);
+    }, 500);
   }, [data, loaded]);
 
   // Poll for changes made on the other device (near-live sync)
@@ -601,6 +603,30 @@ function useStore() {
     }, 12000);
     return () => clearInterval(id);
   }, [loaded]);
+
+  // Flush immediately when leaving / hiding the page so edits aren't lost
+  useEffect(() => {
+    const flush = () => {
+      if (!dirty.current) return;
+      const payload = JSON.stringify({ ...dataRef.current, _v: Date.now() });
+      try {
+        if (navigator.sendBeacon) {
+          navigator.sendBeacon(API, new Blob([payload], { type: "application/json" }));
+        } else {
+          fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: payload, keepalive: true });
+        }
+        dirty.current = false;
+      } catch (e) {}
+    };
+    const onVis = () => { if (document.visibilityState === "hidden") flush(); };
+    window.addEventListener("pagehide", flush);
+    document.addEventListener("visibilitychange", onVis);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      document.removeEventListener("visibilitychange", onVis);
+      flush();
+    };
+  }, []);
 
   return { data, setData, loaded };
 }
@@ -809,6 +835,7 @@ function Tasks({ tasks, data, setData }) {
       posten: d.posten.filter((p) => p.taskId !== id),
     }));
 
+  const editingTask = editing ? tasks.find((t) => t.id === editing) : null;
   const filtered = tasks.filter((t) => {
     if (ownerFilter === "Sten" && !(t.owner === "Sten" || t.owner === "Samen")) return false;
     if (ownerFilter === "Nyarayek" && !(t.owner === "Nyarayek" || t.owner === "Samen")) return false;
@@ -866,7 +893,6 @@ function Tasks({ tasks, data, setData }) {
               {groups[sunday].map((t) => {
                 const isDone = !!data.taskDone[t.id];
                 const isOpen = open === t.id;
-                const isEditing = editing === t.id;
                 const over = !isDone && daysUntil(t.deadline) < 0;
                 return (
                   <li key={t.id} className={"wp-task" + (isDone ? " is-done" : "")}>
@@ -890,31 +916,8 @@ function Tasks({ tasks, data, setData }) {
                       </div>
                       {isOpen && (
                         <div className="wp-task-fold" onClick={(e) => e.stopPropagation()}>
-                          {isEditing ? (
-                            <div className="wp-task-edit">
-                              <label className="wp-te-lab">Naam</label>
-                              <input className="wp-te-input" value={t.name} placeholder="Taaknaam" onChange={(e) => editTask(t.id, "name", e.target.value)} />
-                              <label className="wp-te-lab">Omschrijving</label>
-                              <input className="wp-te-input" value={t.details || ""} placeholder="Korte omschrijving in één zin" onChange={(e) => editTask(t.id, "details", e.target.value)} />
-                              <div className="wp-te-row">
-                                <div className="wp-te-seg">
-                                  {owners.map((o) => (
-                                    <button key={o} type="button" className={"wp-te-segbtn" + (t.owner === o ? " is-on" : "")} onClick={() => editTask(t.id, "owner", o)}>{o}</button>
-                                  ))}
-                                </div>
-                                <input className="wp-te-date" type="date" value={t.deadline} onChange={(e) => editTask(t.id, "deadline", e.target.value)} />
-                              </div>
-                              <div className="wp-te-actions">
-                                <button className="wp-te-del" onClick={() => removeTask(t.id)}>Verwijderen</button>
-                                <button className="wp-te-done" onClick={() => setEditing(null)}>Klaar</button>
-                              </div>
-                            </div>
-                          ) : (
-                            <>
-                              {t.details ? <p className="wp-task-detail">{t.details}</p> : <p className="wp-task-detail is-empty">Nog geen omschrijving</p>}
-                              <button className="wp-edit-btn" onClick={() => setEditing(t.id)} aria-label="Taak bewerken">✎ bewerk</button>
-                            </>
-                          )}
+                          {t.details ? <p className="wp-task-detail">{t.details}</p> : <p className="wp-task-detail is-empty">Nog geen omschrijving</p>}
+                          <button className="wp-edit-btn" onClick={() => setEditing(t.id)} aria-label="Taak bewerken">✎ bewerk</button>
                         </div>
                       )}
                     </div>
@@ -937,6 +940,33 @@ function Tasks({ tasks, data, setData }) {
         />
       ) : (
         <button className="wp-add-btn" onClick={() => setAdding(true)}>+ Taak toevoegen</button>
+      )}
+
+      {editingTask && (
+        <div className="wp-modal-back" onClick={() => setEditing(null)}>
+          <div className="wp-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+            <div className="wp-modal-head">
+              <span className="wp-modal-title">Taak bewerken</span>
+              <button className="wp-modal-x" onClick={() => setEditing(null)} aria-label="Sluiten">×</button>
+            </div>
+            <label className="wp-te-lab">Naam</label>
+            <input className="wp-te-input" value={editingTask.name} placeholder="Taaknaam" onChange={(e) => editTask(editingTask.id, "name", e.target.value)} />
+            <label className="wp-te-lab">Omschrijving</label>
+            <input className="wp-te-input" value={editingTask.details || ""} placeholder="Korte omschrijving in één zin" onChange={(e) => editTask(editingTask.id, "details", e.target.value)} />
+            <label className="wp-te-lab">Wie</label>
+            <div className="wp-te-seg wp-te-seg-full">
+              {owners.map((o) => (
+                <button key={o} type="button" className={"wp-te-segbtn" + (editingTask.owner === o ? " is-on" : "")} onClick={() => editTask(editingTask.id, "owner", o)}>{o}</button>
+              ))}
+            </div>
+            <label className="wp-te-lab">Datum</label>
+            <input className="wp-te-input" type="date" value={editingTask.deadline} onChange={(e) => editTask(editingTask.id, "deadline", e.target.value)} />
+            <div className="wp-te-actions">
+              <button className="wp-te-del" onClick={() => { removeTask(editingTask.id); setEditing(null); }}>Verwijderen</button>
+              <button className="wp-te-done" onClick={() => setEditing(null)}>Klaar</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -976,21 +1006,23 @@ function sibizLines(data) {
 
 function budgetTotals(data) {
   const sib = sibizLines(data).reduce((s, b) => s + (b.amount || 0), 0);
-  const sibPaid = (sib * (data.sibizPaidPct || 0)) / 100;
+  const sibPaid = Math.min(data.sibizPaid || 0, sib);
   const overige = (data.posten || []).reduce((s, p) => s + (p.amount || 0), 0);
   const offGroups = data.offertes || [];
   const off = offGroups.reduce((s, g) => s + g.lines.reduce((x, l) => x + (l.amount || 0), 0), 0);
   const offPaid = offGroups.reduce((s, g) => s + (g.lines.reduce((x, l) => x + (l.amount || 0), 0) * (g.paidPct || 0)) / 100, 0);
+  const grand = sib + overige + off;
+  const budget = data.budget || 0;
   return {
     sib,
     sibPaid,
     overige,
     off,
     offPaid,
-    grand: sib + overige + off,
+    grand,
     paid: sibPaid + offPaid,
-    sibTarget: data.sibizTarget || 0,
-    sibOver: sib - (data.sibizTarget || 0),
+    budget,
+    room: budget - grand,
   };
 }
 
@@ -1291,10 +1323,10 @@ function Schema({ data, setData }) {
 
 function Budget({ data, setData }) {
   const t = budgetTotals(data);
-  const [editTarget, setEditTarget] = useState(false);
-  const [tVal, setTVal] = useState(String(data.sibizTarget));
+  const [editBudget, setEditBudget] = useState(false);
+  const [bVal, setBVal] = useState(String(data.budget));
   const [editPaid, setEditPaid] = useState(false);
-  const [pVal, setPVal] = useState(String(data.sibizPaidPct));
+  const [pVal, setPVal] = useState(String(data.sibizPaid));
   const [addSibiz, setAddSibiz] = useState(false);
   const [addPost, setAddPost] = useState(false);
   const [addOfferte, setAddOfferte] = useState(false);
@@ -1330,7 +1362,8 @@ function Budget({ data, setData }) {
   const addOfferteLine = (gid, name) => setData((d) => ({ ...d, offertes: d.offertes.map((g) => (g.id !== gid ? g : { ...g, lines: [...g.lines, { id: "ol" + Date.now(), name, amount: 0 }] })) }));
   const setOffertePct = (gid, pct) => setData((d) => ({ ...d, offertes: d.offertes.map((g) => (g.id === gid ? { ...g, paidPct: pct } : g)) }));
 
-  const fillPct = t.sibTarget ? Math.min(t.sib / t.sibTarget, 1) : 0;
+  const sibFill = t.sib ? Math.min(t.sibPaid / t.sib, 1) : 0;
+  const budFill = t.budget ? Math.min(t.grand / t.budget, 1) : 0;
 
   const confirmPost = (id) => setData((d) => ({ ...d, posten: d.posten.map((p) => (p.id === id ? { ...p, confirmed: true } : p)) }));
   const unconfirmPost = (id) => setData((d) => ({ ...d, posten: d.posten.map((p) => (p.id === id ? { ...p, confirmed: false } : p)) }));
@@ -1346,10 +1379,21 @@ function Budget({ data, setData }) {
     <div className="wp-stack">
       {/* Status bar - totals across all offertes */}
       <section className="wp-card wp-budget-hero">
+        <div className="wp-bud-top">
+          {editBudget ? (
+            <span className="wp-row-r">budget&nbsp;<input className="wp-tb-input" type="number" autoFocus value={bVal} onChange={(e) => setBVal(e.target.value)} onBlur={() => { const v = parseFloat(bVal); if (!isNaN(v)) setData((d) => ({ ...d, budget: v })); setEditBudget(false); }} onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()} /></span>
+          ) : (
+            <button className="wp-paid-pill" onClick={() => { setBVal(String(data.budget)); setEditBudget(true); }}>budget {euro0(t.budget)} ✎</button>
+          )}
+          <span className="wp-bud-room" style={{ color: t.room >= 0 ? "#5b6b57" : "#9e3d56" }}>
+            {t.room >= 0 ? `${euro0(t.room)} ruimte` : `${euro0(-t.room)} over budget`}
+          </span>
+        </div>
+        <div className="wp-bar"><div className="wp-bar-fill" style={{ width: budFill * 100 + "%", background: t.room >= 0 ? "#5b6b57" : "#9e3d56" }} /></div>
         <div className="wp-summary-3">
           <div className="wp-sum-cell">
             <span className="wp-sum-num">{euro0(t.grand)}</span>
-            <span className="wp-sum-lab">totaal</span>
+            <span className="wp-sum-lab">totale kosten</span>
           </div>
           <div className="wp-sum-cell">
             <span className="wp-sum-num" style={{ color: "#5b6b57" }}>{euro0(t.paid)}</span>
@@ -1369,37 +1413,24 @@ function Budget({ data, setData }) {
         title="Sibiz · Trouwlocatie & catering"
         badge="Offerte"
         badgeClass="wp-badge-offerte"
-        accent={t.sibOver > 0}
         total={euro(t.sib)}
-        status={`${data.sibizPaidPct}% aanbetaald · ${t.sibOver > 0 ? `${euro0(t.sibOver)} over budget` : `${euro0(-t.sibOver)} ruimte`}`}
+        status={`${euro0(t.sibPaid)} aanbetaald · ${euro(t.sib - t.sibPaid)} nog open`}
       >
         <div className="wp-bar">
-          <div className="wp-bar-fill" style={{ width: fillPct * 100 + "%", background: t.sibOver > 0 ? "#9e3d56" : "#5b6b57" }} />
-        </div>
-        <div className="wp-paid">
-          {editTarget ? (
-            <span className="wp-row-r">
-              budget&nbsp;
-              <input className="wp-tb-input" type="number" autoFocus value={tVal} onChange={(e) => setTVal(e.target.value)} onBlur={() => { const v = parseFloat(tVal); if (!isNaN(v)) setData((d) => ({ ...d, sibizTarget: v })); setEditTarget(false); }} onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()} />
-            </span>
-          ) : (
-            <button className="wp-paid-pill" onClick={() => { setTVal(String(data.sibizTarget)); setEditTarget(true); }}>budget {euro0(t.sibTarget)} ✎</button>
-          )}
-          <span style={{ color: t.sibOver > 0 ? "#9e3d56" : "#5b6b57", fontWeight: 600 }}>
-            {t.sibOver > 0 ? `${euro0(t.sibOver)} boven budget` : `${euro0(-t.sibOver)} ruimte`}
-          </span>
+          <div className="wp-bar-fill" style={{ width: sibFill * 100 + "%", background: "#5b6b57" }} />
         </div>
         <div className="wp-paid">
           {editPaid ? (
             <span className="wp-row-r">
-              aanbetaald&nbsp;
-              <input className="wp-tb-input" type="number" autoFocus value={pVal} onChange={(e) => setPVal(e.target.value)} onBlur={() => { const v = parseFloat(pVal); if (!isNaN(v)) setData((d) => ({ ...d, sibizPaidPct: Math.max(0, Math.min(100, v)) })); setEditPaid(false); }} onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()} />%
+              aanbetaald &euro;&nbsp;
+              <input className="wp-tb-input" type="number" autoFocus value={pVal} onChange={(e) => setPVal(e.target.value)} onBlur={() => { const v = parseFloat(pVal); if (!isNaN(v)) setData((d) => ({ ...d, sibizPaid: Math.max(0, v) })); setEditPaid(false); }} onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()} />
             </span>
           ) : (
-            <button className="wp-paid-pill" onClick={() => { setPVal(String(data.sibizPaidPct)); setEditPaid(true); }}>{data.sibizPaidPct}% aanbetaald ✎</button>
+            <button className="wp-paid-pill" onClick={() => { setPVal(String(data.sibizPaid)); setEditPaid(true); }}>{euro0(t.sibPaid)} aanbetaald ✎</button>
           )}
-          <span><b>{euro(t.sibPaid)}</b> voldaan · <b>{euro(t.sib - t.sibPaid)}</b> te gaan</span>
+          <span><b>{euro(t.sibPaid)}</b> voldaan · <b>{euro(t.sib - t.sibPaid)}</b> nog open</span>
         </div>
+        <p className="wp-paid-note">Afspraak: 50% contant + 25% aanbetaling op de andere helft. Alleen de aanbetaling van {euro0(t.sibPaid)} is voldaan; de rest staat nog open.</p>
 
         {sCats.map((cat) => {
           const items = sGroups[cat];
@@ -1830,6 +1861,16 @@ const CSS = `
 }
 .wp-te-actions{display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:4px;}
 .wp-te-done{padding:8px 18px; border:none; background:var(--ink); color:var(--paper); border-radius:9px; font-size:12.5px; font-weight:700;}
+.wp-te-seg-full{display:flex;}
+.wp-te-seg-full .wp-te-segbtn{flex:1; text-align:center;}
+.wp-modal-back{position:fixed; inset:0; z-index:200; background:rgba(58,46,44,.42); display:flex; align-items:center; justify-content:center; padding:20px; animation:wp-fade .18s ease;}
+.wp-modal{width:100%; max-width:380px; max-height:88vh; overflow-y:auto; background:var(--paper2); border:1px solid var(--line); border-radius:18px; box-shadow:0 18px 50px rgba(58,46,44,.32); padding:18px; display:flex; flex-direction:column; gap:7px; animation:wp-pop .2s cubic-bezier(.3,1.1,.5,1);}
+.wp-modal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;}
+.wp-modal-title{font-family:'Fraunces',serif; font-size:19px; color:var(--ink);}
+.wp-modal-x{width:30px; height:30px; border:none; background:transparent; font-size:22px; line-height:1; color:var(--muted); cursor:pointer; border-radius:8px;}
+.wp-modal-x:hover{background:#f1e7df; color:var(--ink);}
+@keyframes wp-fade{from{opacity:0;}}
+@keyframes wp-pop{from{opacity:0; transform:translateY(10px) scale(.98);}}
 
 /* add */
 .wp-add-btn{width:100%; padding:13px; border:1.5px dashed #d9cabf; background:transparent;
@@ -1875,6 +1916,9 @@ const CSS = `
 .wp-sum-cell{flex:1; text-align:center;}
 .wp-sum-num{font-family:'Fraunces',serif; font-size:23px; font-weight:600; display:block; line-height:1.1;}
 .wp-sum-lab{font-size:10px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted);}
+.wp-bud-top{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+.wp-bud-room{font-size:13px; font-weight:700;}
+.wp-paid-note{margin:9px 0 2px; font-size:11.5px; line-height:1.45; color:var(--muted); border-left:2px solid var(--blush); padding-left:10px;}
 .wp-badge{font-size:10px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; padding:3px 8px; border-radius:99px;}
 .wp-badge-offerte{background:#e7efe3; color:var(--sage);}
 .wp-badge-budget{background:#f4e9dd; color:var(--brass);}
