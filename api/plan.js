@@ -153,8 +153,8 @@ export default async function handler(req, res) {
         "Trouwdatum: " + (weddingDate || "nog onbekend") + "\n" +
         "Niveau: " + tierLabel + "\n\n" +
         "Keuzes:\n" + qa + "\n\n" +
-        "Bijzondere wensen 1: " + (body.wish1 || "-") + "\n" +
-        "Bijzondere wensen 2: " + (body.wish2 || "-") + "\n\n" +
+        "Wensen bruidspaar: " + (body.wish1 || "-") + "\n" +
+        "Speciale vereisten voor gasten: " + (body.wish2 || "-") + "\n\n" +
         "Maak een dagschema, een gecategoriseerde takenlijst, een budgetverdeling passend bij het niveau, en een gastenverdeling (guestBreakdown met aantallen; guests leeg laten). Geef ook een korte beschrijving.";
     } else {
       return res.status(400).json({ error: "Onbekende modus" });

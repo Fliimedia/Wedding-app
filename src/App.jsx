@@ -331,10 +331,12 @@ function useStore(uid) {
   const dataRef = useRef(data);
   dataRef.current = data;
   const api = uid && uid !== "demo" ? API + "?u=" + encodeURIComponent(uid) : API;
+  const local = !uid || uid === "local";
 
   // Initial load from the shared store
   useEffect(() => {
     let alive = true;
+    if (local) { setLoaded(true); return () => { alive = false; }; }
     (async () => {
       try {
         const r = await fetch(api);
@@ -357,7 +359,7 @@ function useStore(uid) {
 
   // Save local changes (debounced) to the shared store
   useEffect(() => {
-    if (!loaded) return;
+    if (!loaded || local) return;
     if (adopting.current) { adopting.current = false; return; } // don't echo a just-adopted remote
     dirty.current = true;
     if (saveTimer.current) clearTimeout(saveTimer.current);
@@ -382,7 +384,7 @@ function useStore(uid) {
 
   // Poll for changes made on the other device (near-live sync)
   useEffect(() => {
-    if (!loaded) return;
+    if (!loaded || local) return;
     const id = setInterval(async () => {
       if (dirty.current || saving.current) return; // never clobber in-progress edits
       try {
@@ -404,7 +406,7 @@ function useStore(uid) {
   // Flush immediately when leaving / hiding the page so edits aren't lost
   useEffect(() => {
     const flush = () => {
-      if (!dirty.current) return;
+      if (local || !dirty.current) return;
       const payload = JSON.stringify({ ...dataRef.current, _v: Date.now() });
       try {
         if (navigator.sendBeacon) {
@@ -629,19 +631,16 @@ async function extractFile(file) {
 const OB_QUESTIONS = [
   { q: "Aantal gasten", options: ["< 50", "50-100", "100-150", "150+"] },
   { q: "Locatie", options: ["Binnenland", "Buitenland"] },
-  { q: "Soort locatie", options: ["Landhuis", "Kasteel", "Strand", "Restaurant", "Tuin"] },
   { q: "Ceremonie", options: ["Kerkelijk", "Gemeentehuis", "Vrije ceremonie"] },
-  { q: "Seizoen", options: ["Lente", "Zomer", "Herfst", "Winter"] },
-  { q: "Stijl", options: ["Klassiek", "Modern", "Boho", "Rustiek", "Glamour"] },
-  { q: "Tijdstip", options: ["Overdag", "Middag + avond", "Avond"] },
-  { q: "Diner", options: ["Zittend diner", "Buffet", "Walking dinner", "BBQ"] },
+  { q: "Ceremonie & feest", options: ["Zelfde locatie", "Aparte locaties"] },
+  { q: "Dagindeling", options: ["Overdag", "Middag + avond", "Avond", "Meerdaags"] },
+  { q: "Catering", options: ["Zittend diner", "Buffet", "Walking dinner", "BBQ"] },
   { q: "Drank", options: ["Open bar", "Beperkt", "Zelf meenemen"] },
   { q: "Muziek", options: ["DJ", "Live band", "Beide", "Akoestisch"] },
   { q: "Beeld", options: ["Fotograaf", "Foto + video", "Minimaal"] },
   { q: "Bloemen & styling", options: ["Uitbundig", "Subtiel", "Minimaal"] },
-  { q: "Kleding", options: ["Couture", "Confectie", "Duurzaam"] },
+  { q: "Bruidskleding", options: ["Couture", "Confectie", "Duurzaam"] },
   { q: "Overnachting gasten", options: ["Geregeld", "Zelf regelen", "Niet nodig"] },
-  { q: "Vervoer", options: ["Trouwauto", "Bus voor gasten", "Geen speciaal"] },
 ];
 
 const OB_TIERS = [
@@ -873,7 +872,7 @@ function Onboarding({ data, setData }) {
             <span className="wp-ob-cardtx"><b>Laat AI een plan maken</b><i>Beantwoord een paar vragen</i></span>
           </button>
           <button className="wp-ob-skip-opt" onClick={() => finish(false)}>Overslaan en zelf invullen</button>
-          <button className="wp-ob-back wp-ob-back-solo" onClick={() => { setStep(3); setScreen("manual"); }}>Terug</button>
+          <button className="wp-ob-back wp-ob-back-solo" onClick={() => { setStep(3); setScreen("manual"); }}>‹ Terug</button>
         </div>
       )}
 
@@ -914,7 +913,7 @@ function Onboarding({ data, setData }) {
             )}
           </div>
           <div className="wp-ob-nav">
-            <button className="wp-ob-back" onClick={() => (step > 1 ? setStep(step - 1) : setScreen("hero"))}>Terug</button>
+            <button className="wp-ob-back" onClick={() => (step > 1 ? setStep(step - 1) : setScreen("hero"))}>‹ Terug</button>
             {step < 3 ? (
               <button className="wp-ob-go" disabled={!stepValid} onClick={() => setStep(step + 1)}>Volgende</button>
             ) : (
@@ -938,7 +937,7 @@ function Onboarding({ data, setData }) {
             </label>
           )}
           {err ? <p className="wp-ob-err">{err}</p> : null}
-          <button className="wp-ob-back wp-ob-back-solo" onClick={() => { setErr(""); setScreen("options"); }}>Terug</button>
+          <button className="wp-ob-back wp-ob-back-solo" onClick={() => { setErr(""); setScreen("options"); }}>‹ Terug</button>
         </div>
       )}
 
@@ -971,11 +970,13 @@ function Onboarding({ data, setData }) {
               </div>
             ))}
           </div>
-          <textarea className="wp-ob-ta" placeholder="Bijzondere wens 1 (bv. duurzaam, geen speeches)" value={wish1} onChange={(e) => setWish1(e.target.value)} />
-          <textarea className="wp-ob-ta" placeholder="Bijzondere wens 2" value={wish2} onChange={(e) => setWish2(e.target.value)} />
+          <label className="wp-ob-falab">Wensen bruidspaar</label>
+          <textarea className="wp-ob-ta" placeholder="Bv. duurzaam, geen speeches, gewenste sfeer of stijl" value={wish1} onChange={(e) => setWish1(e.target.value)} />
+          <label className="wp-ob-falab">Speciale vereisten voor gasten</label>
+          <textarea className="wp-ob-ta" placeholder="Bv. dieetwensen, kinderen, toegankelijkheid, vervoer" value={wish2} onChange={(e) => setWish2(e.target.value)} />
           {err ? <p className="wp-ob-err">{err}</p> : null}
           <div className="wp-ob-nav">
-            <button className="wp-ob-back" onClick={() => { setErr(""); setScreen("options"); }}>Terug</button>
+            <button className="wp-ob-back" onClick={() => { setErr(""); setScreen("options"); }}>‹ Terug</button>
             <button className="wp-ob-go" disabled={busy} onClick={runGenerate}>{busy ? "Bezig..." : "Genereer plan"}</button>
           </div>
           {busy ? <div className="wp-ob-busy"><span className="wp-spin" />AI stelt jullie plan samen...</div> : null}
@@ -1032,11 +1033,13 @@ function Login({ onLogin }) {
       <div className="wp-login-card">
         <img className="wp-login-rings" src={RINGS_IMG} alt="Trouwringen" />
         <h1 className="wp-login-title">Weddy</h1>
-        <p className="wp-login-sub">Log in met je e-mailadres en pincode. Je planning wordt bewaard en is op elk apparaat beschikbaar.</p>
+        <p className="wp-login-sub">Log in om je planning te bewaren en op elk apparaat te openen. Of ga verder zonder inloggen.</p>
         <input className="wp-ob-input wp-login-input" type="email" placeholder="E-mailadres" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
         <input className="wp-ob-input wp-login-input" type="password" inputMode="numeric" placeholder="Pincode" value={pin} onChange={(e) => setPin(e.target.value)} autoComplete="current-password" />
         {err ? <p className="wp-ob-err">{err}</p> : null}
         <button className="wp-ob-go wp-login-go" disabled={busy} onClick={submit}>{busy ? "Bezig..." : "Inloggen"}</button>
+        <button className="wp-login-cont" onClick={() => onLogin("local")}>Doorgaan zonder inloggen</button>
+        <p className="wp-login-cont-note">Zonder inloggen wordt je planning niet bewaard.</p>
         <button className="wp-login-demo" onClick={() => onLogin("demo")}>Bekijk de demo</button>
       </div>
 
@@ -1134,7 +1137,10 @@ function Planner({ uid, onLogout }) {
 
       <footer className="wp-footer">
         <CoupleCrest className="wp-footer-mark" nameA={data.coupleA} nameB={data.coupleB} />
-        <button className="wp-logout" onClick={onLogout}>Uitloggen</button>
+        <div className="wp-foot-actions">
+          <button className="wp-foot-link" onClick={() => setData((d) => ({ ...d, onboarded: false }))}>Set-up opnieuw</button>
+          <button className="wp-foot-link" onClick={onLogout}>{uid === "local" ? "Inloggen om op te slaan" : "Uitloggen"}</button>
+        </div>
       </footer>
     </div>
   );
@@ -2531,7 +2537,12 @@ const CSS = `
 .wp-login-sub{font-size:14.5px; line-height:1.5; color:var(--muted); margin:0 0 22px;}
 .wp-login-input{width:100%; box-sizing:border-box; margin-bottom:12px; text-align:center;}
 .wp-login-go{width:100%; margin-top:4px;}
+.wp-login-cont{width:100%; margin-top:12px; padding:13px; border:1px solid var(--line); border-radius:14px; background:#fff; color:var(--ink); font-size:15px; font-weight:600; cursor:pointer;}
+.wp-login-cont-note{font-size:12px; color:var(--muted); margin:8px 0 0;}
 .wp-login-demo{margin-top:16px; background:none; border:none; color:var(--muted); font-size:13.5px; text-decoration:underline; cursor:pointer;}
+.wp-ob-falab{align-self:flex-start; font-size:13px; font-weight:600; color:var(--ink); margin:12px 0 5px;}
+.wp-foot-actions{display:flex; flex-direction:column; align-items:center; gap:8px; margin-top:12px;}
+.wp-foot-link{background:none; border:none; color:var(--muted); font-size:12.5px; text-decoration:underline; cursor:pointer;}
 .wp-ai-note{font-size:13.5px; line-height:1.5; color:var(--muted); margin:2px 0 14px;}
 .wp-ai-provs{display:flex; gap:8px; margin-bottom:12px;}
 .wp-ai-explain{margin:0 0 14px; text-align:left;}
