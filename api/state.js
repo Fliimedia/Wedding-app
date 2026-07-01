@@ -10,7 +10,7 @@ const token =
 
 const redis = url && token ? new Redis({ url, token }) : null;
 
-const KEY = "wedding:planner:v1";
+const KEY = "wedding:planner:demo";
 
 export default async function handler(req, res) {
   if (!redis) {

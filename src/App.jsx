@@ -4,7 +4,7 @@ const LOGO_CREST = "data:image/webp;base64,UklGRnyJAABXRUJQVlA4WAoAAAAQAAAAPwEAq
 const LOGO_MARK = "data:image/png;base64,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";
 
 /* ============================================================
-   Sten & Nyarayek - Trouwplanner
+   Nick & Sarah - Trouwplanner
    Mobile-first wedding planning dashboard
    ============================================================ */
 
@@ -95,236 +95,139 @@ const RESCHEDULE = {
 
 const TASKS = [
   ["Bruidsboeket + bruidsmeisjes boeket x3", "Bloemen & styling", "Samen", "2026-06-21", "Langs om 12.30 bij Parnassusweg 3, zo niet dan 22 juni"],
-  ["Corsages", "Bloemen & styling", "Nyarayek", "2026-06-21", ""],
-  ["Bloemen voor tafels", "Bloemen & styling", "Nyarayek", "2026-06-21", "Nya vraagt Marianne: afspraken of logistiek, wat moeten we doen?"],
-  ["Sieraden", "Kleding & accessoires", "Nyarayek", "2026-06-21", "Nya & Teresa"],
-  ["Ringgravure", "Kleding & accessoires", "Sten", "2026-06-21", ""],
-  ["Bruidsmeisjes", "Bridal party", "Nyarayek", "2026-06-21", "Lucy vragen + groepsapp aanmaken met Lucy + Rachel + Isabel"],
-  ["Playlist voor DJ maken", "Muziek & entertainment", "Samen", "2026-06-21", "Sten deelt Spotify playlist #1 met Nya"],
-  ["Voorbeeld nummers sturen @ Nicole Leroux + repetitie plannen", "Muziek & entertainment", "Samen", "2026-06-21", "Sten deelt Spotify playlist #2 met Nya"],
+  ["Corsages", "Bloemen & styling", "Sarah", "2026-06-21", ""],
+  ["Bloemen voor tafels", "Bloemen & styling", "Sarah", "2026-06-21", "Sarah vraagt Petra: afspraken of logistiek, wat moeten we doen?"],
+  ["Sieraden", "Kleding & accessoires", "Sarah", "2026-06-21", "Sarah & Laura"],
+  ["Ringgravure", "Kleding & accessoires", "Nick", "2026-06-21", ""],
+  ["Bruidsmeisjes", "Bridal party", "Sarah", "2026-06-21", "Emma vragen + groepsapp aanmaken met Emma + Sofie + Noor"],
+  ["Playlist voor DJ maken", "Muziek & entertainment", "Samen", "2026-06-21", "Nick deelt Spotify playlist #1 met Sarah"],
+  ["Voorbeeld nummers sturen @ de muziekschool + repetitie plannen", "Muziek & entertainment", "Samen", "2026-06-21", "Nick deelt Spotify playlist #2 met Sarah"],
   ["Gastenlijst", "Uitnodigingen & gasten", "Samen", "2026-06-21", ""],
-  ["Noodkit samenstellen", "Planning & logistiek", "Sten", "2026-06-21", "Pleisters, paracetamol, naaisetje, make-up, deodorant, veiligheidsspelden. Vragen Marianne"],
-  ["Getuigen gemeente doorgeven", "Wettelijk huwelijk", "Nyarayek", "2026-06-22", "Mochir, Teresa + David, Ma (?). Doorgeven bij aanvraag gemeente"],
-  ["Voorgenomen huwelijk melden @ Gemeente", "Wettelijk huwelijk", "Nyarayek", "2026-06-22", ""],
-  ["Reactie + fotograaf bevestigen", "Leveranciers", "Nyarayek", "2026-06-22", "Via BV"],
-  ["Catering / diner", "Receptie, diner & feest", "Samen", "2026-06-22", "Proefsessie inplannen diner met cateraars + Sibiz"],
-  ["Kapper (man)", "Leveranciers", "Sten", "2026-06-24", "Afspraak Marcel (do 14.00) + bedenken of hij het kan doen"],
+  ["Noodkit samenstellen", "Planning & logistiek", "Nick", "2026-06-21", "Pleisters, paracetamol, naaisetje, make-up, deodorant, veiligheidsspelden. Vragen Petra"],
+  ["Getuigen gemeente doorgeven", "Wettelijk huwelijk", "Sarah", "2026-06-22", "Tom, Laura + Ruben, oma. Doorgeven bij aanvraag gemeente"],
+  ["Voorgenomen huwelijk melden @ Gemeente", "Wettelijk huwelijk", "Sarah", "2026-06-22", ""],
+  ["Reactie + fotograaf bevestigen", "Leveranciers", "Sarah", "2026-06-22", "Via BV"],
+  ["Catering / diner", "Receptie, diner & feest", "Samen", "2026-06-22", "Proefsessie inplannen diner met cateraars + Culina"],
+  ["Kapper (man)", "Leveranciers", "Nick", "2026-06-24", "Afspraak Daan (do 14.00) + bedenken of hij het kan doen"],
   ["Huwelijksformulier invullen + opsturen Bisdom", "Kerk & ceremonie", "Samen", "2026-06-28", "Gemeentedatum invullen"],
   ["Videograaf", "Leveranciers", "Samen", "2026-06-28", "Vragen via FC"],
-  ["Visagiste / kapper: proefsessie plannen", "Leveranciers", "Nyarayek", "2026-06-28", "Nu €650,- en bij extra budget eventueel hoger pakket"],
-  ["Menukaarten", "Receptie, diner & feest", "Nyarayek", "2026-06-28", "Dieetrestricties benoemen! Vega, vis, noten, melk"],
-  ["Tafelindeling / seating chart", "Receptie, diner & feest", "Nyarayek", "2026-06-28", ""],
-  ["Naamkaartjes", "Receptie, diner & feest", "Nyarayek", "2026-06-28", "Pakken bruidsjonkers bestellen + opvragen"],
-  ["Outfit Sten", "Kleding & accessoires", "Sten", "2026-06-28", "Uitzoeken 3-delig pak op maat, max. €500"],
-  ["Manchetknopen / accessoires + bruidsjonker pakken", "Kleding & accessoires", "Sten", "2026-06-28", ""],
-  ["Trouwringen", "Kleding & accessoires", "Sten", "2026-06-28", "Uitkiezen + €1200 budget"],
-  ["Jurken bruidsmeisjes", "Bridal party", "Nyarayek", "2026-06-28", "60 pp budget + zelf de jurk bestellen + tikkie"],
-  ["Kleding bruidsjonkers", "Bridal party", "Sten", "2026-06-28", "Sten vraagt maten, stemt af met Nya en bestelt"],
+  ["Visagiste / kapper: proefsessie plannen", "Leveranciers", "Sarah", "2026-06-28", "Nu €650,- en bij extra budget eventueel hoger pakket"],
+  ["Menukaarten", "Receptie, diner & feest", "Sarah", "2026-06-28", "Dieetrestricties benoemen! Vega, vis, noten, melk"],
+  ["Tafelindeling / seating chart", "Receptie, diner & feest", "Sarah", "2026-06-28", ""],
+  ["Naamkaartjes", "Receptie, diner & feest", "Sarah", "2026-06-28", "Pakken bruidsjonkers bestellen + opvragen"],
+  ["Outfit Nick", "Kleding & accessoires", "Nick", "2026-06-28", "Uitzoeken 3-delig pak op maat, max. €500"],
+  ["Manchetknopen / accessoires + bruidsjonker pakken", "Kleding & accessoires", "Nick", "2026-06-28", ""],
+  ["Trouwringen", "Kleding & accessoires", "Nick", "2026-06-28", "Uitkiezen + €1200 budget"],
+  ["Jurken bruidsmeisjes", "Bridal party", "Sarah", "2026-06-28", "60 pp budget + zelf de jurk bestellen + tikkie"],
+  ["Kleding bruidsjonkers", "Bridal party", "Nick", "2026-06-28", "Nick vraagt maten, stemt af met Sarah en bestelt"],
   ["Eventueel vervoer voor gasten", "Planning & logistiek", "Samen", "2026-06-28", ""],
-  ["Hotel / overnachting", "Planning & logistiek", "Nyarayek", "2026-06-28", "Spoorhuis overnachting reserveren à max. €150"],
+  ["Hotel / overnachting", "Planning & logistiek", "Sarah", "2026-06-28", "Spoorhuis overnachting reserveren à max. €150"],
   ["Honeymoon plannen", "Planning & logistiek", "Samen", "2026-06-28", "Tanzania + boeken na bruiloft"],
-  ["Nagels plannen", "Beauty & voorbereiding", "Nyarayek", "2026-06-28", "Afspraak voor bruiloftsnagels"],
-  ["Kerk opruimen na dienst", "Planning & logistiek", "Nyarayek", "2026-06-28", "Sten vraagt Hanna, Annabel, Akout, Sieta"],
-  ["Receptie: zitten of lopen? @ Sharon", "Planning & logistiek", "Sten", "2026-06-28", "Sten zoekt online op"],
+  ["Nagels plannen", "Beauty & voorbereiding", "Sarah", "2026-06-28", "Afspraak voor bruiloftsnagels"],
+  ["Kerk opruimen na dienst", "Planning & logistiek", "Sarah", "2026-06-28", "Nick vraagt Fleur, Iris, Lars, Bram"],
+  ["Receptie: zitten of lopen? @ Kim", "Planning & logistiek", "Nick", "2026-06-28", "Nick zoekt online op"],
   ["Statafels + zitplekken + lampionnen + parasolletjes + cadeautafel", "Planning & logistiek", "Samen", "2026-06-28", ""],
   ["Diner-timing afstemmen", "Planning & logistiek", "Samen", "2026-06-28", "Welk eten komt wanneer, aansnijden bruidstaart, koffie mogelijk?"],
-  ["Huwelijkse voorwaarden (notaris)", "Wettelijk huwelijk", "Sten", "2026-07-05", "Contact notaris, afspraak maken"],
-  ["Decoratie voor in de kerk", "Kerk & ceremonie", "Nyarayek", "2026-07-05", "Offertes vergelijken, keuze: zuilen met bloemen"],
-  ["Design van drukwerk", "Kerk & ceremonie", "Sten", "2026-07-07", "Uitnodigingen + kerkboekje + menukaart + welkomstbord + naamkaart"],
-  ["Cadeautjes voor bridal party", "Bridal party", "Nyarayek", "2026-07-07", ""],
-  ["Eventuele speeches plannen", "Muziek & entertainment", "Samen", "2026-07-07", "Vragen: Teresa, Ies, Kasper, Pa"],
+  ["Huwelijkse voorwaarden (notaris)", "Wettelijk huwelijk", "Nick", "2026-07-05", "Contact notaris, afspraak maken"],
+  ["Decoratie voor in de kerk", "Kerk & ceremonie", "Sarah", "2026-07-05", "Offertes vergelijken, keuze: zuilen met bloemen"],
+  ["Design van drukwerk", "Kerk & ceremonie", "Nick", "2026-07-07", "Uitnodigingen + kerkboekje + menukaart + welkomstbord + naamkaart"],
+  ["Cadeautjes voor bridal party", "Bridal party", "Sarah", "2026-07-07", ""],
+  ["Eventuele speeches plannen", "Muziek & entertainment", "Samen", "2026-07-07", "Vragen: Laura, Sanne, Milan, Pa"],
   ["Tijdschema per leverancier", "Planning & logistiek", "Samen", "2026-07-07", "Zet in 'Leverancier schema'"],
   ["Contactlijst leveranciers", "Planning & logistiek", "Samen", "2026-07-07", "Zet in 'Leverancier schema'"],
-  ["Entertainment receptie", "Muziek & entertainment", "Sten", "2026-07-07", "Bridal bingo, schilder in Amstelkerk"],
-  ["QR-code app voor foto's + houders", "Muziek & entertainment", "Sten", "2026-07-07", "Uitprinten + aanschaf houders"],
-  ["Photo booth", "Muziek & entertainment", "Sten", "2026-07-07", "Offerte opvragen"],
+  ["Entertainment receptie", "Muziek & entertainment", "Nick", "2026-07-07", "Bridal bingo, schilder in Landhuis De Linde"],
+  ["QR-code app voor foto's + houders", "Muziek & entertainment", "Nick", "2026-07-07", "Uitprinten + aanschaf houders"],
+  ["Photo booth", "Muziek & entertainment", "Nick", "2026-07-07", "Offerte opvragen"],
   ["First dance", "Muziek & entertainment", "Samen", "2026-07-07", "Liedje + liedje moeders & dansstijl + repeteren"],
   ["Last dance / song", "Muziek & entertainment", "Samen", "2026-07-07", ""],
-  ["Kaarsen", "Kerk & ceremonie", "Nyarayek", "2026-07-12", ""],
-  ["Kaarshouders", "Kerk & ceremonie", "Nyarayek", "2026-07-12", ""],
-  ["Ringkussen / doosje voor de ringen", "Kerk & ceremonie", "Nyarayek", "2026-07-12", ""],
-  ["Ceremoniemeester / wedding coördinator", "Leveranciers", "Nyarayek", "2026-07-12", ""],
-  ["Gastenboek", "Receptie, diner & feest", "Nyarayek", "2026-07-12", "Nya koopt in China"],
-  ["Cadeautafel / enveloppendoos", "Receptie, diner & feest", "Nyarayek", "2026-07-12", "Nya zoekt China-pakket uit, met al het drukwerk & meer"],
-  ["Vazen voor bloemen", "Bloemen & styling", "Nyarayek", "2026-07-12", ""],
-  ["Welkomstbord", "Bloemen & styling", "Nyarayek", "2026-07-12", "Nya zoekt China-pakket uit"],
-  ["Mandjes / bloemblaadjes", "Bridal party", "Nyarayek", "2026-07-12", "Cadeau dames (Nya) + bruidsjonkers (Sten), max. €100 p.p."],
+  ["Kaarsen", "Kerk & ceremonie", "Sarah", "2026-07-12", ""],
+  ["Kaarshouders", "Kerk & ceremonie", "Sarah", "2026-07-12", ""],
+  ["Ringkussen / doosje voor de ringen", "Kerk & ceremonie", "Sarah", "2026-07-12", ""],
+  ["Ceremoniemeester / wedding coördinator", "Leveranciers", "Sarah", "2026-07-12", ""],
+  ["Gastenboek", "Receptie, diner & feest", "Sarah", "2026-07-12", "Sarah koopt in China"],
+  ["Cadeautafel / enveloppendoos", "Receptie, diner & feest", "Sarah", "2026-07-12", "Sarah zoekt China-pakket uit, met al het drukwerk & meer"],
+  ["Vazen voor bloemen", "Bloemen & styling", "Sarah", "2026-07-12", ""],
+  ["Welkomstbord", "Bloemen & styling", "Sarah", "2026-07-12", "Sarah zoekt China-pakket uit"],
+  ["Mandjes / bloemblaadjes", "Bridal party", "Sarah", "2026-07-12", "Cadeau dames (Sarah) + bruidsjonkers (Nick), max. €100 p.p."],
   ["Uitnodigingen versturen", "Uitnodigingen & gasten", "Samen", "2026-07-12", ""],
-  ["Spullen cadeautafel bestellen", "Receptie, diner & feest", "Nyarayek", "2026-07-12", "Enveloppendoos, S&N letterlogo, tafelkleed, etc."],
-  ["Vervoer voor bruidspaar", "Planning & logistiek", "Sten", "2026-07-14", "Huis > Bovenkerk > Ouderkerk"],
-  ["Bruidsjurk", "Kleding & accessoires", "Nyarayek", "2026-07-17", "Nya maakt kostenoverzicht: vlucht, offerte bruidsjurk"],
-  ["Sluier / haaraccessoires", "Kleding & accessoires", "Nyarayek", "2026-07-17", "Nya naar Türkiye"],
-  ["Bruidsschoenen", "Kleding & accessoires", "Nyarayek", "2026-07-17", ""],
-  ["Lingerie", "Kleding & accessoires", "Nyarayek", "2026-07-17", ""],
-  ["Tweede schoenen voor feest", "Kleding & accessoires", "Nyarayek", "2026-07-17", ""],
-  ["Bloemenmeisjes kleding", "Bridal party", "Nyarayek", "2026-07-17", "Faith & Hailey"],
+  ["Spullen cadeautafel bestellen", "Receptie, diner & feest", "Sarah", "2026-07-12", "Enveloppendoos, S&N letterlogo, tafelkleed, etc."],
+  ["Vervoer voor bruidspaar", "Planning & logistiek", "Nick", "2026-07-14", "Huis > Dorpshoek > Vreeland"],
+  ["Bruidsjurk", "Kleding & accessoires", "Sarah", "2026-07-17", "Sarah maakt kostenoverzicht: vlucht, offerte bruidsjurk"],
+  ["Sluier / haaraccessoires", "Kleding & accessoires", "Sarah", "2026-07-17", "Sarah naar Türkiye"],
+  ["Bruidsschoenen", "Kleding & accessoires", "Sarah", "2026-07-17", ""],
+  ["Lingerie", "Kleding & accessoires", "Sarah", "2026-07-17", ""],
+  ["Tweede schoenen voor feest", "Kleding & accessoires", "Sarah", "2026-07-17", ""],
+  ["Bloemenmeisjes kleding", "Bridal party", "Sarah", "2026-07-17", "Faith & Hailey"],
   ["Prayers / trouwboek / liturgie uitkiezen", "Wettelijk huwelijk", "Samen", "2026-07-25", "Vóór afspraak 1 augustus"],
   ["Schoenen inlopen", "Beauty & voorbereiding", "Samen", "2026-08-01", ""],
-  ["Kerkruimte voor receptie + koffie/thee", "Planning & logistiek", "Sten", "2026-08-01", "Bijdrage €500"],
+  ["Kerkruimte voor receptie + koffie/thee", "Planning & logistiek", "Nick", "2026-08-01", "Bijdrage €500"],
   ["Generale repetitie inplannen", "Planning & logistiek", "Samen", "2026-08-03", "Met bruidsjonkers & team, na gesprek pastoor 1 aug"],
-  ["Besluiten wie Nya weggeeft", "Wettelijk huwelijk", "Nyarayek", "2026-08-03", ""],
-  ["Taart voor 60 personen", "Receptie, diner & feest", "Nyarayek", "2026-08-21", "Logistiek bespreken (21 aug) à 250, moeder Rachel + dinerbon"],
-  ["Draaiboek maken", "Planning & logistiek", "Sten", "2026-08-21", ""],
+  ["Besluiten wie Sarah weggeeft", "Wettelijk huwelijk", "Sarah", "2026-08-03", ""],
+  ["Taart voor 60 personen", "Receptie, diner & feest", "Sarah", "2026-08-21", "Logistiek bespreken (21 aug) à 250, moeder Sofie + dinerbon"],
+  ["Draaiboek maken", "Planning & logistiek", "Nick", "2026-08-21", ""],
   ["DJ", "Leveranciers", "Samen", "2026-09-01", "Bespreken playlist + DJ-set"],
-  ["Jazzband", "Leveranciers", "Nyarayek", "2026-09-01", "Playlist/set Nicole Leroux + contrabas"],
-  ["Introductie voor Orfeo", "Muziek & entertainment", "Samen", "2026-09-01", "Begeleid feest, wat kan er & waar"],
+  ["Jazzband", "Leveranciers", "Sarah", "2026-09-01", "Playlist/set de muziekschool + contrabas"],
+  ["Introductie voor Vibe", "Muziek & entertainment", "Samen", "2026-09-01", "Begeleid feest, wat kan er & waar"],
   ["Weersverwachting checken", "Laatste week", "Samen", "2026-09-12", ""],
-  ["Betalingen afronden", "Laatste week", "Sten", "2026-09-12", "Check betalingen leveranciers: allen voldaan?"],
-  ["Ringen klaarleggen", "Laatste week", "Sten", "2026-09-12", ""],
+  ["Betalingen afronden", "Laatste week", "Nick", "2026-09-12", "Check betalingen leveranciers: allen voldaan?"],
+  ["Ringen klaarleggen", "Laatste week", "Nick", "2026-09-12", ""],
 ].map((t, i) => ({ id: "t" + i, name: t[0], category: t[1], owner: t[2], deadline: RESCHEDULE[i] || t[3], details: t[4] }));
 
-const BUDGET = [
-  ["Prosecco", "Receptie", 297.0],
-  ["0.0 drankje vlierbloesem", "Receptie", 150.0],
-  ["Luxe hapjes", "Receptie", 600.0],
-  ["Tafelgarnituur", "Receptie", 180.0],
-  ["Mediterraan shared diner", "Diner", 2250.0],
-  ["Koksuren (inschatting)", "Diner", 200.0],
-  ["Schotelgeld", "Diner", 210.0],
-  ["Diverse dranken borrel & diner", "Diner", 2340.0],
-  ["Personeelskosten bediening borrel & diner", "Diner", 1180.0],
-  ["Leidinggevende bediening borrel & diner", "Diner", 284.0],
-  ["Bittergarnituur", "Feest", 240.0],
-  ["Diverse dranken feest", "Feest", 2730.0],
-  ["Personeelskosten bediening feest", "Feest", 885.0],
-  ["Leidinggevende bediening feest", "Feest", 266.25],
-  ["Organisatiekosten", "Organisatie & locatie", 350.0],
-  ["Stelpost huurmaterialen", "Organisatie & locatie", 1200.0],
-  ["Huur feestzaal Amstelstroom", "Organisatie & locatie", 500.0],
-  ["Huur ruimtes boven", "Organisatie & locatie", 250.0],
-  ["Huur tuin Amstelkerk", "Organisatie & locatie", 500.0],
-  ["Huur Amstelkerk voor diner incl. ombouw", "Organisatie & locatie", 900.0],
-].map((b, i) => ({ id: "b" + i, name: b[0], category: b[1], amount: b[2] }));
+const BUDGET = [];
 
 /* Guest list with the actual marks from the document:
    inv = "Uitgenodigd" (col D), pres = "Aanwezig" (col E). side = "Van wie". */
-const G = (name, category, inv, pres) => ({ name, category, side: "Sten", inv, pres });
-const GN = (name, pres) => ({ name, category: "Familie & vrienden", side: "Nyarayek", inv: true, pres });
+const G = (name, category, inv, pres) => ({ name, category, side: "Nick", inv, pres });
+const GN = (name, pres) => ({ name, category: "Familie & vrienden", side: "Sarah", inv: true, pres });
 const GUESTS = [
-  G("Ed Bossong", "Familie", true, true),
-  G("Marianne Bossong", "Familie", true, true),
-  G("Annabel Bossong", "Familie", true, true),
-  G("Daan", "Familie", true, true),
-  G("Sabine", "Familie", true, true),
-  G("Amanda", "Familie", true, true),
-  G("Oreste", "Familie", true, true),
-  G("Sandra", "Familie", true, true),
-  G("Anders", "Familie", true, true),
-  G("David", "Familie", true, true),
-  G("Franca", "Familie", true, true),
-  G("Tim", "Vrienden", true, true),
-  G("Rachel", "Vrienden", true, true),
-  G("Jorn", "Vrienden", true, true),
-  G("Isa", "Vrienden", true, true),
-  G("Rutger", "Vrienden", false, false),
-  G("Julian", "Vrienden", true, false),
-  G("Karlijn", "Vrienden", true, false),
-  G("Menne", "Vrienden", true, true),
-  G("Marlies", "Vrienden", true, true),
-  G("Laurens", "Vrienden", true, true),
-  G("Mariska", "Vrienden", true, true),
-  G("Robert", "Vrienden", true, true),
-  G("Kasper", "Vrienden", true, true),
-  G("Julia", "Vrienden", true, true),
-  G("Lisette Job", "Vrienden", true, true),
-  G("Tom Koele", "Vrienden", true, false),
-  G("Jandrik", "Vrienden", true, true),
-  G("Jorick", "Vrienden", true, true),
-  G("Stéphan", "Vrienden", true, true),
-  G("Sander", "Vrienden", true, true),
-  G("Judith", "Vrienden", true, true),
-  G("Philip", "Vrienden", true, true),
-  G("Zico", "Vrienden", true, true),
-  G("Bram", "Vrienden", true, true),
-  G("Nada", "Collega's", false, false),
-  G("Mayte", "Collega's", false, false),
-  G("Rob Klap", "Collega's", true, true),
-  G("Babette Klap", "Collega's", true, true),
-  G("Roos Klap", "Collega's", true, true),
-  G("Sam Klap", "Collega's", true, true),
-  G("Koen Helder", "Collega's", true, true),
-  G("Mirjam Helder", "Collega's", true, true),
-  G("Jon & Willeke", "Vrienden van ouders", false, false),
-  G("Koen & Chris", "Vrienden van ouders", false, false),
-  G("John & Nandi", "Vrienden van ouders", false, false),
-  G("Hannah", "Overig", false, false),
-  G("Erik Klap", "Back-up", false, false),
-  G("Raymond Geurtsen", "Back-up", false, false),
+  G("Ouders bruidegom", "Familie", true, true),
+  G("Oma Vermeer", "Familie", true, true),
+  G("Thomas Vermeer", "Familie", true, true),
+  G("Sanne Vermeer", "Familie", true, true),
+  G("Lars de Vries", "Familie", true, true),
+  G("Emma de Vries", "Familie", true, false),
+  G("Daan Bakker", "Vrienden", true, true),
+  G("Iris Bakker", "Vrienden", true, true),
+  G("Tom Jansen", "Vrienden", true, true),
+  G("Sofie Jansen", "Vrienden", true, true),
+  G("Ruben Smit", "Vrienden", true, false),
+  G("Fleur Smit", "Vrienden", true, true),
+  G("Milan Visser", "Vrienden", false, false),
+  G("Noor Visser", "Vrienden", true, true),
+  G("Kim Meijer", "Collega's", true, true),
+  G("Bram Meijer", "Collega's", true, true),
+  G("Julia de Boer", "Collega's", false, false),
+  G("Sem de Boer", "Collega's", true, true),
+  G("Familie Hendriks", "Vrienden van ouders", false, false),
+  G("Familie Willems", "Vrienden van ouders", true, true),
+  G("Lisa Peters", "Overig", false, false),
+  G("Mark Dekker", "Back-up", false, false),
 
-  // Nyarayek (bruid)
-  GN("Teresa Awein", true),
-  GN("Mochir", true),
-  GN("Akout", true),
-  GN("Akot", true),
-  GN("Colm", true),
-  GN("Tante Atong", false),
-  GN("Uncle Baak", false),
-  GN("Awein", false),
-  GN("Achol", false),
-  GN("Akol", false),
-  GN("Uncle Wol", false),
-  GN("Lucy", true),
-  GN("Alem (dochter Lucy 11/12 jaar)", true),
-  GN("Gai", true),
-  GN("Chinkow", true),
-  GN("Angheith (dochter Gai 11/12 jaar oud)", true),
-  GN("Oom Wiuw", true),
-  GN("Mary van Wieuw", true),
-  GN("Madam Achilec", true),
-  GN("Argangelo", true),
-  GN("Jal", true),
-  GN("Tiek", false),
-  GN("Chiman", false),
-  GN("Sieta", true),
-  GN("Isabella", true),
-  GN("Neyruus", true),
-  GN("William", true),
-  GN("Rachel", true),
-  GN("Eline", true),
-  GN("Dave", true),
-  GN("Aniek", true),
-  GN("Miguel", true),
-  GN("Margriet", true),
-  GN("Mira", true),
-  GN("Floor", true),
-  GN("Etam", true),
-  GN("Victor", true),
-  GN("Asia", true),
-  GN("Allan", false),
-  GN("Atalia", true),
-  GN("Kind Atalia 2 (meisje van 8/9) en baby", true),
-  GN("Jonathan", true),
-  GN("Jemane", true),
-  GN("Florance", true),
-  GN("Linda", true),
-  GN("Indri", true),
-  GN("Indri man", true),
-  GN("Adut John", true),
-  GN("Adel", true),
-  GN("dochter Adut", true),
-  GN("Majok", true),
-  GN("Abuk", true),
-  GN("Jolanda", true),
-  GN("Rock Mitaniq", true),
-  GN("Isa Mitaniq", true),
-  GN("Tito Mitaniq", true),
-  GN("Annelies Termeer", true),
-  GN("Pabek Mitaniq", true),
-  GN("Deng Mitaniq", false),
-  GN("Ajak", true),
-  GN("Atem", true),
-  GN("Ajak klein", true),
-  GN("Gong", true),
-  GN("Aleul", true),
-  GN("Goem", true),
-  GN("Samia", true),
-  GN("Nathalia Akot", true),
-  GN("Puck", true),
-  GN("Laura", true),
+  // Bruid
+  GN("Ouders bruid", true),
+  GN("Oma van de bruid", true),
+  GN("Lotte Groen", true),
+  GN("Pien Groen", true),
+  GN("Sara Mulder", false),
+  GN("Nina Mulder", true),
+  GN("Jasper Kok", true),
+  GN("Roos Kok", true),
+  GN("Anouk Vos", true),
+  GN("Bas Vos", true),
+  GN("Eva Bos", true),
+  GN("Lieke Bos", true),
+  GN("Guus Brouwer", false),
+  GN("Femke Brouwer", true),
+  GN("Sven Kramer", true),
+  GN("Maud Kramer", true),
+  GN("Tessa Willemsen", true),
+  GN("Jesse Willemsen", true),
+  GN("Amber Post", true),
+  GN("Luuk Post", true),
 ].map((g, i) => ({ ...g, id: "g" + i }));
 
 /* ---------- Day schedule seed (times/descriptions editable in-app) ---------- */
-/* Ceremony: St. Urbanuskerk (Bovenkerk). Receptie/diner/feest: Amstelkerk (Ouderkerk a/d Amstel). */
+/* Ceremony: Sint-Martinuskerk (Dorpshoek). Receptie/diner/feest: Landhuis De Linde (Vreeland). */
 /* row = [time, what, travelMinutes|null, [roleKeys]] */
 const SCHEDULE_SEED = [
   ["Voorbereiding", [
@@ -332,14 +235,14 @@ const SCHEDULE_SEED = [
     ["10:00", "Visagiste en kapper starten bij moeder thuis (bruid en bruidsmeisjes)", null, ["bruid", "meisjes"]],
     ["10:00", "Fotograaf: getting ready bruid", null, ["foto", "bruid"]],
     ["10:30", "Bloemen bezorgd: boeket, corsages, bruidsmeisjesboeketten", null, ["bloem"]],
-    ["11:00", "Sten en bruidsjonkers kleden thuis aan, kapper Marcel", null, ["bruidegom", "jonkers"]],
+    ["11:00", "Nick en bruidsjonkers kleden thuis aan, kapper Daan", null, ["bruidegom", "jonkers"]],
     ["11:00", "Videograaf start (beide kanten)", null, ["video"]],
     ["11:30", "Bloemist richt de kerk in (zuilen met bloemen)", null, ["bloem"]],
-    ["12:00", "Sten klaar, foto met bruidsjonkers", null, ["bruidegom", "jonkers", "foto"]],
+    ["12:00", "Nick klaar, foto met bruidsjonkers", null, ["bruidegom", "jonkers", "foto"]],
     ["12:15", "Lichte lunch voor het hele gezelschap", null, ["paar"]],
   ]],
   ["Pickup en inloop kerk", [
-    ["12:30", "Sten rijdt van huis naar moeder en haalt de bruid op", 15, ["bruidegom"]],
+    ["12:30", "Nick rijdt van huis naar moeder en haalt de bruid op", 15, ["bruidegom"]],
     ["12:45", "First look en foto bruidspaar bij moeder thuis", null, ["paar", "foto", "video"]],
     ["13:00", "Inloop gasten, orgel speelt", null, ["gasten", "cm"]],
     ["13:10", "Bruidspaar rijdt naar de kerk", 15, ["paar"]],
@@ -356,13 +259,13 @@ const SCHEDULE_SEED = [
     ["14:40", "Slotwoord en uittocht bruidspaar", null, ["paar"]],
     ["14:45", "Felicitaties en bloemblaadjes, groepsfoto", null, ["gasten", "foto"]],
   ]],
-  ["Verplaatsing naar Ouderkerk", [
+  ["Verplaatsing naar Vreeland", [
     ["15:15", "Fotoshoot bruidspaar (los van gasten)", null, ["paar", "foto", "video"]],
-    ["15:15", "Gasten rijden naar de Amstelkerk en parkeren", 15, ["gasten"]],
+    ["15:15", "Gasten rijden naar de Landhuis De Linde en parkeren", 15, ["gasten"]],
     ["15:30", "Coördinator checkt de receptieopstelling", null, ["coord"]],
     ["15:30", "Jazzband soundcheck in de tuin", null, ["jazz"]],
-    ["15:45", "Cateraar Mediterraans: mise en place keuken Sibiz", null, ["cater"]],
-    ["15:45", "Cateraar Sudanees: levert de gerechten bij Sibiz", null, ["cater"]],
+    ["15:45", "Cateraar 2: mise en place keuken Culina", null, ["cater"]],
+    ["15:45", "Cateraar 1: levert de gerechten bij Culina", null, ["cater"]],
   ]],
   ["Receptie", [
     ["16:00", "Ontvangst: prosecco, vlierbloesem, hapjes, jazzband", null, ["gasten", "jazz"]],
@@ -375,16 +278,16 @@ const SCHEDULE_SEED = [
   ["Diner", [
     ["18:00", "Gasten aan tafel: seating, naamkaartjes, menu", null, ["gasten", "cm"]],
     ["18:10", "Welkomstwoord en toost", null, ["cm", "paar"]],
-    ["18:20", "Voorgerechten shared, bediening Sibiz", null, ["cater"]],
+    ["18:20", "Voorgerechten shared, bediening Culina", null, ["cater"]],
     ["18:50", "Speech 1: Pa", null, ["cm"]],
     ["19:05", "Hoofdgerechten shared", null, ["cater"]],
-    ["19:35", "Speech 2 en 3: Teresa en Ies", null, ["cm"]],
-    ["19:55", "Speech 4: Kasper", null, ["cm"]],
+    ["19:35", "Speech 2 en 3: Laura en Sanne", null, ["cm"]],
+    ["19:55", "Speech 4: Milan", null, ["cm"]],
     ["20:05", "Bruidstaart aansnijden, dessert en koffie", null, ["paar", "cater"]],
     ["20:20", "Dansgroep komt binnen als verrassing", null, ["dans"]],
   ]],
   ["Feest", [
-    ["20:00", "DJ Orfeo bouwt op en start in de feestzaal", null, ["dj"]],
+    ["20:00", "DJ Vibe bouwt op en start in de feestzaal", null, ["dj"]],
     ["20:30", "Polonaise danst van diner naar de feestzaal", 5, ["dans", "paar", "gasten"]],
     ["20:35", "First dance, daarna moedersdans", null, ["paar"]],
     ["20:50", "Dansvloer open, DJ set", null, ["dj", "gasten"]],
@@ -404,9 +307,9 @@ const VENDORS_SEED = [
   ["Ceremoniemeester", "Deelt kerkboekjes uit, wijst plaatsen en kondigt diner en speeches aan.", "12:45", "22:00"],
   ["Fotograaf", "Getting ready, ceremonie, groeps en paarfoto, receptie en eerste dans.", "10:00", "21:30"],
   ["Videograaf", "Getting ready, ceremonie, speeches en first dance.", "11:00", "21:30"],
-  ["DJ (Orfeo)", "Draait achtergrond bij de start en de dansset tot sluiting.", "20:00", "00:30"],
-  ["Cateraar 1 (Sudanees)", "Bereidt de gerechten elders en levert ze af bij Sibiz.", "15:45", "16:15"],
-  ["Cateraar 2 (Mediterraans)", "Kookt ter plaatse in de keuken van Sibiz en serveert het diner.", "15:45", "20:30"],
+  ["DJ (Vibe)", "Draait achtergrond bij de start en de dansset tot sluiting.", "20:00", "00:30"],
+  ["Cateraar 1", "Bereidt de gerechten elders en levert ze af bij Culina.", "15:45", "16:15"],
+  ["Cateraar 2", "Kookt ter plaatse in de keuken van Culina en serveert het diner.", "15:45", "20:30"],
 ].map(([naam, desc, arrive, finish], i) => ({ id: "v" + i, naam, desc, arrive, finish }));
 
 /* ---------- Role labels + schedule filters ---------- */
@@ -445,7 +348,7 @@ const CAT_COLOR = {
 };
 const catColor = (c) => CAT_COLOR[c] || "#9a8b7a";
 
-const OWNER_COLOR = { Sten: "#5b6b57", Nyarayek: "#b5546a", Samen: "#b08d57", Sibiz: "#9a8b7a" };
+const OWNER_COLOR = { Nick: "#5b6b57", Sarah: "#b5546a", Samen: "#b08d57", Culina: "#9a8b7a" };
 const ownerColor = (o) => OWNER_COLOR[o] || "#9a8b7a";
 
 /* ---------- Helpers ---------- */
@@ -485,7 +388,7 @@ const besprekingFor = (iso) => MEETINGS.find((m) => m >= iso) || MEETINGS[MEETIN
 /* Budget figures that live in the task details, attached to their task. */
 const TASK_BUDGET_SEED = {
   t17: 650,  // Visagiste / kapper - haar & make-up
-  t21: 500,  // Outfit Sten - pak bruidegom
+  t21: 500,  // Outfit Nick - pak bruidegom
   t23: 1200, // Trouwringen
   t24: 180,  // Jurken bruidsmeisjes (3 × €60, schatting)
   t27: 150,  // Hotel / overnachting
@@ -515,9 +418,9 @@ const EMPTY = {
   customGuests: [],
   // Budget v2 - grouped per offerte
   budget: 25000, // totaal trouwbudget
-  sibizPaid: 1946, // werkelijk aanbetaald op Sibiz (25% aanbetaling op de niet-contante helft)
+  sibizPaid: 0, // werkelijk aanbetaald op Culina (25% aanbetaling op de niet-contante helft)
   sibizOverrides: {}, // edits op de offerteregels
-  sibizCustom: [], // toegevoegde regels in de Sibiz-offerte
+  sibizCustom: [], // toegevoegde regels in de Culina-offerte
   posten: SEED_POSTEN, // overige kosten (begroot, nog geen offerte)
   offertes: [], // extra offertes die later binnenkomen
   schedule: SCHEDULE_SEED, // bewerkbaar dagschema
@@ -706,6 +609,12 @@ export default function App() {
   const [tab, setTab] = useState("taken");
   const [now, setNow] = useState(new Date());
   const [musicOn, toggleMusic] = useHarpMusic();
+  const [intro, setIntro] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setIntro(false), 3000);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 60000);
@@ -727,7 +636,21 @@ export default function App() {
     <div className="wp-root">
       <style>{CSS}</style>
 
-      <Hero daysToGo={daysToGo} musicOn={musicOn} onToggleMusic={toggleMusic} />
+      {intro && (
+        <div className="wp-intro" onClick={() => setIntro(false)} role="presentation">
+          <div className="wp-intro-art" aria-hidden="true">
+            <div className="wp-if-base" style={{ backgroundImage: `url(${FLORAL})` }} />
+            <div className="wp-if-corner ic-tl" style={{ backgroundImage: `url(${FLORAL})` }} />
+            <div className="wp-if-corner ic-tr" style={{ backgroundImage: `url(${FLORAL})` }} />
+            <div className="wp-if-corner ic-bl" style={{ backgroundImage: `url(${FLORAL})` }} />
+            <div className="wp-if-corner ic-br" style={{ backgroundImage: `url(${FLORAL})` }} />
+            <div className="wp-intro-veil" />
+          </div>
+          <img className="wp-intro-mark" src={LOGO_CREST} alt="" />
+        </div>
+      )}
+
+      <Hero daysToGo={daysToGo} musicOn={musicOn} onToggleMusic={toggleMusic} tab={tab} setTab={setTab} />
 
       <TabBar tab={tab} setTab={setTab} />
 
@@ -740,7 +663,7 @@ export default function App() {
       </main>
 
       <footer className="wp-footer">
-        <img className="wp-footer-mark" src={LOGO_MARK} alt="N & S Bossong" />
+        <img className="wp-footer-mark" src={LOGO_MARK} alt="N & S Vermeer" />
       </footer>
     </div>
   );
@@ -761,20 +684,52 @@ function Sprig({ className }) {
   );
 }
 
-function Hero({ daysToGo, musicOn, onToggleMusic }) {
+function Hero({ daysToGo, musicOn, onToggleMusic, tab, setTab }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const navTabs = [
+    ["taken", "To Do"],
+    ["budget", "Budget"],
+    ["gasten", "Gasten"],
+    ["schema", "Schema"],
+  ];
   return (
     <header className="wp-hero">
       <div className="wp-hero-floral" aria-hidden="true" style={{ backgroundImage: `url(${FLORAL})` }} />
       <div className="wp-hero-wash" aria-hidden="true" />
-      <VinylButton playing={musicOn} onToggle={onToggleMusic} />
-      <img className="wp-logo" src={LOGO_CREST} alt="N & S Bossong" />
-      <h1 className="wp-names">Sten <span>&amp;</span> Nyarayek</h1>
-      <div className="wp-countdown">
-        <span className="wp-count-num">{daysToGo > 0 ? daysToGo : daysToGo === 0 ? "Vandaag" : "0"}</span>
-        <span className="wp-count-label">{daysToGo > 1 ? "dagen te gaan" : daysToGo === 1 ? "dag te gaan" : daysToGo === 0 ? "het is zover" : "getrouwd"}</span>
+      <nav className="wp-nav">
+        <img className="wp-nav-logo" src={LOGO_MARK} alt="N & S" />
+        <div className="wp-nav-right">
+          <VinylButton playing={musicOn} onToggle={onToggleMusic} />
+          <button className={"wp-burger" + (menuOpen ? " is-open" : "")} onClick={() => setMenuOpen((o) => !o)} aria-label="Menu" aria-expanded={menuOpen}>
+            <span />
+            <span />
+            <span />
+          </button>
+        </div>
+        <div className="wp-nav-line" aria-hidden="true" />
+        {menuOpen && (
+          <>
+            <div className="wp-menu-back" onClick={() => setMenuOpen(false)} />
+            <div className="wp-menu" role="menu">
+              {navTabs.map(([k, label]) => (
+                <button key={k} role="menuitem" className={"wp-menu-item" + (tab === k ? " is-on" : "")} onClick={() => { setTab(k); setMenuOpen(false); }}>{label}</button>
+              ))}
+              <div className="wp-menu-sep" />
+              <button role="menuitem" className="wp-menu-item" onClick={() => { onToggleMusic(); setMenuOpen(false); }}>{musicOn ? "Muziek uit" : "Muziek aan"}</button>
+            </div>
+          </>
+        )}
+      </nav>
+      <div className="wp-hero-body">
+        <img className="wp-logo" src={LOGO_CREST} alt="N & S Vermeer" />
+        <h1 className="wp-names">Nick <span>&amp;</span> Sarah</h1>
+        <div className="wp-countdown">
+          <span className="wp-count-num">{daysToGo > 0 ? daysToGo : daysToGo === 0 ? "Vandaag" : "0"}</span>
+          <span className="wp-count-label">{daysToGo > 1 ? "dagen te gaan" : daysToGo === 1 ? "dag te gaan" : daysToGo === 0 ? "het is zover" : "getrouwd"}</span>
+        </div>
+        <p className="wp-date">19 september 2026</p>
+        <p className="wp-venues">Sint-Martinuskerk · Landhuis De Linde</p>
       </div>
-      <p className="wp-date">19 september 2026</p>
-      <p className="wp-venues">St. Urbanuskerk · Amstelkerk</p>
     </header>
   );
 }
@@ -809,7 +764,7 @@ function Tasks({ tasks, data, setData }) {
   const [editing, setEditing] = useState(null);
   const [adding, setAdding] = useState(false);
 
-  const owners = ["Samen", "Sten", "Nyarayek"];
+  const owners = ["Samen", "Nick", "Sarah"];
   const categories = [...new Set(tasks.map((t) => t.category))].sort((a, b) => a.localeCompare(b, "nl"));
 
   const toggleDone = (id) =>
@@ -837,8 +792,8 @@ function Tasks({ tasks, data, setData }) {
 
   const editingTask = editing ? tasks.find((t) => t.id === editing) : null;
   const filtered = tasks.filter((t) => {
-    if (ownerFilter === "Sten" && !(t.owner === "Sten" || t.owner === "Samen")) return false;
-    if (ownerFilter === "Nyarayek" && !(t.owner === "Nyarayek" || t.owner === "Samen")) return false;
+    if (ownerFilter === "Nick" && !(t.owner === "Nick" || t.owner === "Samen")) return false;
+    if (ownerFilter === "Sarah" && !(t.owner === "Sarah" || t.owner === "Samen")) return false;
     if (catFilter !== "Alle" && t.category !== catFilter) return false;
     if (hideDone && data.taskDone[t.id]) return false;
     return true;
@@ -983,7 +938,7 @@ function AddTask({ onAdd, onCancel }) {
       <input className="wp-input" placeholder="Korte omschrijving (optioneel)" value={details} onChange={(e) => setDetails(e.target.value)} />
       <div className="wp-addrow">
         <select className="wp-input" value={owner} onChange={(e) => setOwner(e.target.value)}>
-          {["Sten", "Nyarayek", "Samen"].map((o) => <option key={o}>{o}</option>)}
+          {["Nick", "Sarah", "Samen"].map((o) => <option key={o}>{o}</option>)}
         </select>
         <input className="wp-input" type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
       </div>
@@ -1192,7 +1147,7 @@ const PHASE_COLOR = {
   "Voorbereiding": "#b5546a",
   "Pickup en inloop kerk": "#a9745f",
   "Huwelijksmis": "#8a6d3b",
-  "Verplaatsing naar Ouderkerk": "#9a8b7a",
+  "Verplaatsing naar Vreeland": "#9a8b7a",
   "Receptie": "#5b6b57",
   "Diner": "#9e3d56",
   "Feest": "#8a5a7a",
@@ -1408,61 +1363,6 @@ function Budget({ data, setData }) {
 
       {/* ===== OFFERTES (definitieve kosten) ===== */}
       <Collapsible title="Offertes" badge="Definitieve kosten" badgeClass="wp-badge-offerte" total={euro(offertesTotal)} status="Bevestigde offertes en kosten" section defaultOpen>
-      <Collapsible
-        flush
-        title="Sibiz · Trouwlocatie & catering"
-        badge="Offerte"
-        badgeClass="wp-badge-offerte"
-        total={euro(t.sib)}
-        status={`${euro0(t.sibPaid)} aanbetaald · ${euro(t.sib - t.sibPaid)} nog open`}
-      >
-        <div className="wp-bar">
-          <div className="wp-bar-fill" style={{ width: sibFill * 100 + "%", background: "#5b6b57" }} />
-        </div>
-        <div className="wp-paid">
-          {editPaid ? (
-            <span className="wp-row-r">
-              aanbetaald &euro;&nbsp;
-              <input className="wp-tb-input" type="number" autoFocus value={pVal} onChange={(e) => setPVal(e.target.value)} onBlur={() => { const v = parseFloat(pVal); if (!isNaN(v)) setData((d) => ({ ...d, sibizPaid: Math.max(0, v) })); setEditPaid(false); }} onKeyDown={(e) => e.key === "Enter" && e.currentTarget.blur()} />
-            </span>
-          ) : (
-            <button className="wp-paid-pill" onClick={() => { setPVal(String(data.sibizPaid)); setEditPaid(true); }}>{euro0(t.sibPaid)} aanbetaald ✎</button>
-          )}
-          <span><b>{euro(t.sibPaid)}</b> voldaan · <b>{euro(t.sib - t.sibPaid)}</b> nog open</span>
-        </div>
-        <p className="wp-paid-note">Afspraak: 50% contant + 25% aanbetaling op de andere helft. Alleen de aanbetaling van {euro0(t.sibPaid)} is voldaan; de rest staat nog open.</p>
-
-        {sCats.map((cat) => {
-          const items = sGroups[cat];
-          const sub = items.reduce((s, b) => s + b.amount, 0);
-          return (
-            <div key={cat}>
-              <div className="wp-subhead"><span>{cat}</span><span>{euro(sub)}</span></div>
-              <ul className="wp-budget-list">
-                {items.map((b) => {
-                  const isCustom = data.sibizCustom.some((c) => c.id === b.id);
-                  return (
-                    <li key={b.id} className="wp-budget-row">
-                      <span className="wp-budget-name">{b.name}</span>
-                      <span className="wp-row-r">
-                        <EditableAmount value={b.amount} allowClear={isCustom} onSave={(n) => setSibizAmount(b.id, n)} />
-                        {isCustom && <button className="wp-delx" onClick={() => setSibizAmount(b.id, null)} aria-label="Verwijder regel">×</button>}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          );
-        })}
-
-        {addSibiz ? (
-          <InlineAdd placeholder="Naam kostenpost" withCategory categories={["Receptie", "Diner", "Feest", "Organisatie & locatie", "Overig"]} onAdd={(name, cat) => { addSibizItem(name, cat); setAddSibiz(false); }} onCancel={() => setAddSibiz(false)} />
-        ) : (
-          <button className="wp-add-sm" onClick={() => setAddSibiz(true)}>+ Regel toevoegen</button>
-        )}
-      </Collapsible>
-
       {/* Extra offertes binnen Offertes */}
       {data.offertes.map((g) => {
         const gTotal = g.lines.reduce((s, l) => s + (l.amount || 0), 0);
@@ -1573,7 +1473,7 @@ function Guests({ guests, data, setData }) {
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState("");
   const [cat, setCat] = useState("Vrienden");
-  const [side, setSide] = useState("Sten");
+  const [side, setSide] = useState("Nick");
 
   // effective marks: stored override wins over the document's seeded value
   const inv = (g) => (data.guestInv[g.id] !== undefined ? data.guestInv[g.id] : !!g.inv);
@@ -1584,7 +1484,7 @@ function Guests({ guests, data, setData }) {
   const invited = guests.filter(inv).length;
   const present = guests.filter(pres).length;
 
-  const sides = ["Sten", "Nyarayek"];
+  const sides = ["Nick", "Sarah"];
 
   return (
     <div className="wp-stack">
@@ -1595,7 +1495,7 @@ function Guests({ guests, data, setData }) {
       </section>
 
       {sides.map((s) => {
-        const sideGuests = guests.filter((g) => (g.side || "Sten") === s);
+        const sideGuests = guests.filter((g) => (g.side || "Nick") === s);
         const sInvited = sideGuests.filter(inv).length;
         const sPresent = sideGuests.filter(pres).length;
         const cats = {};
@@ -1604,9 +1504,9 @@ function Guests({ guests, data, setData }) {
         return (
           <Collapsible
             key={s}
-            title={s === "Sten" ? "Bruidegom · Sten" : "Bruid · Nyarayek"}
+            title={s === "Nick" ? "Bruidegom · Nick" : "Bruid · Sarah"}
             total={sideGuests.length}
-            defaultOpen={s === "Sten"}
+            defaultOpen={s === "Nick"}
             status={sideGuests.length === 0 ? "Nog toe te voegen" : `${sInvited} uitgenodigd · ${sPresent} aanwezig`}
           >
             {sortedCats.map((c) => (
@@ -1639,8 +1539,8 @@ function Guests({ guests, data, setData }) {
           <input className="wp-input" placeholder="Naam gast" value={name} onChange={(e) => setName(e.target.value)} />
           <div className="wp-addrow">
             <select className="wp-input" value={side} onChange={(e) => setSide(e.target.value)}>
-              <option value="Sten">Van Sten</option>
-              <option value="Nyarayek">Van Nyarayek</option>
+              <option value="Nick">Van Nick</option>
+              <option value="Sarah">Van Sarah</option>
             </select>
             <select className="wp-input" value={cat} onChange={(e) => setCat(e.target.value)}>
               {CAT_ORDER.map((o) => <option key={o}>{o}</option>)}
@@ -1701,14 +1601,30 @@ const CSS = `
 .wp-root :focus-visible{outline:2px solid var(--rose); outline-offset:2px; border-radius:4px;}
 
 /* Hero */
-.wp-hero{position:relative; overflow:hidden; padding:44px 24px 34px; text-align:center; min-height:300px;}
+.wp-hero{position:relative; overflow:hidden; text-align:center;}
 .wp-hero-floral{position:absolute; inset:0; z-index:0; background-size:cover; background-position:center; background-repeat:no-repeat;}
 .wp-hero-wash{position:absolute; inset:0; z-index:1;
   background:
     radial-gradient(125% 95% at 50% 42%, rgba(251,246,242,.82) 22%, rgba(251,246,242,.5) 52%, rgba(251,246,242,.1) 100%),
     radial-gradient(120% 80% at 18% 4%, rgba(247,223,226,.4) 0%, rgba(247,223,226,0) 55%);
 }
-.wp-hero::after{content:""; position:absolute; inset:9px; border:1.4px solid rgba(198,155,94,.55); border-radius:14px; z-index:3; pointer-events:none;}
+.wp-hero-body{position:relative; z-index:2; padding:32px 24px 32px;}
+.wp-nav{position:relative; z-index:20; display:flex; align-items:center; justify-content:space-between; padding:10px 16px 12px; background:#fff;}
+.wp-nav-logo{width:30px; height:auto; opacity:.85;}
+.wp-nav-right{display:flex; align-items:center; gap:10px;}
+.wp-nav-line{position:absolute; left:0; right:0; bottom:0; height:4px; background:linear-gradient(to bottom, var(--brass) 0, var(--brass) 1px, transparent 1px, transparent 3px, var(--brass) 3px, var(--brass) 4px); animation:goldGlow 7s ease-in-out infinite;}
+@keyframes goldGlow{0%, 80%, 100%{filter:brightness(1); box-shadow:0 0 0 rgba(198,155,94,0);} 90%{filter:brightness(1.45) saturate(1.25); box-shadow:0 1px 9px rgba(198,155,94,.6);}}
+.wp-burger{width:38px; height:38px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; border:1px solid var(--line); background:var(--paper2); border-radius:10px; cursor:pointer; padding:0;}
+.wp-burger span{display:block; width:18px; height:2px; background:var(--ink); border-radius:2px; transition:transform .2s ease, opacity .2s ease;}
+.wp-burger.is-open span:nth-child(1){transform:translateY(6px) rotate(45deg);}
+.wp-burger.is-open span:nth-child(2){opacity:0;}
+.wp-burger.is-open span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
+.wp-menu-back{position:fixed; inset:0; z-index:1;}
+.wp-menu{position:absolute; top:calc(100% + 6px); right:14px; z-index:2; min-width:172px; background:#fff; border:1px solid var(--line); border-radius:14px; box-shadow:0 14px 34px rgba(58,46,44,.18); padding:7px; display:flex; flex-direction:column; gap:2px;}
+.wp-menu-item{padding:10px 13px; border:none; background:transparent; border-radius:9px; font-size:14px; font-weight:600; color:var(--ink); text-align:left; cursor:pointer;}
+.wp-menu-item:hover{background:#f4ece5;}
+.wp-menu-item.is-on{background:var(--ink); color:var(--paper);}
+.wp-menu-sep{height:1px; background:var(--line); margin:5px 4px;}
 .wp-sprig{position:absolute; width:54px; color:var(--sage); opacity:.45; z-index:1;}
 .wp-sprig-l{top:14px; left:6px; transform:rotate(-18deg);}
 .wp-sprig-r{top:14px; right:6px; transform:scaleX(-1) rotate(-18deg);}
@@ -1722,13 +1638,26 @@ const CSS = `
 .wp-count-label{font-size:12px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted); margin-top:6px;}
 .wp-date{position:relative; z-index:2; margin:8px 0 0; font-size:14px; color:var(--ink); font-weight:600; letter-spacing:.04em;}
 .wp-venues{position:relative; z-index:2; margin:3px 0 0; font-size:11.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--brass); font-weight:600;}
-.wp-vinyl{position:absolute; top:14px; right:14px; z-index:5; width:42px; height:42px; padding:0; border:1px solid rgba(198,155,94,.5); border-radius:50%; background:rgba(255,255,255,.55); backdrop-filter:blur(4px); box-shadow:0 3px 10px rgba(58,46,44,.14); cursor:pointer; transition:transform .18s ease, box-shadow .18s ease;}
+.wp-vinyl{width:38px; height:38px; padding:0; border:1px solid rgba(198,155,94,.5); border-radius:50%; background:var(--paper2); box-shadow:0 2px 7px rgba(58,46,44,.12); cursor:pointer; transition:transform .18s ease, box-shadow .18s ease;}
 .wp-vinyl:hover{transform:scale(1.06);}
 .wp-vinyl:active{transform:scale(.96);}
 .wp-vinyl svg{width:100%; height:100%; display:block;}
 .wp-vinyl-spin{transform-box:fill-box; transform-origin:center;}
 .wp-vinyl.is-spinning .wp-vinyl-spin{animation:wp-spin 3s linear infinite;}
 @keyframes wp-spin{to{transform:rotate(360deg);}}
+.wp-intro{position:fixed; inset:0; z-index:1000; overflow:hidden; display:flex; align-items:center; justify-content:center; background:#efdcd6; animation:wpIntroBg 3s ease forwards; will-change:opacity;}
+.wp-intro::after{content:""; position:absolute; inset:14px; border:1.6px solid rgba(198,155,94,.72); border-radius:16px; z-index:3; pointer-events:none;}
+.wp-intro-art{position:absolute; inset:14px; z-index:0; overflow:hidden; border-radius:16px;}
+.wp-if-base{position:absolute; inset:0; background-size:cover; background-position:center; background-repeat:no-repeat;}
+.wp-if-corner{position:absolute; width:58%; height:52%; background-repeat:no-repeat; background-size:185% 200%;}
+.ic-tl{top:0; left:0; background-position:left top;}
+.ic-tr{top:0; right:0; background-position:right top;}
+.ic-bl{bottom:0; left:0; background-position:left bottom;}
+.ic-br{bottom:0; right:0; background-position:right bottom;}
+.wp-intro-veil{position:absolute; inset:0; z-index:1; background:radial-gradient(125% 95% at 50% 42%, rgba(251,246,242,.82) 22%, rgba(251,246,242,.5) 52%, rgba(251,246,242,.1) 100%), radial-gradient(120% 80% at 18% 4%, rgba(247,223,226,.4) 0%, rgba(247,223,226,0) 55%);}
+.wp-intro-mark{position:relative; z-index:2; width:150px; height:auto; filter:drop-shadow(0 4px 16px rgba(58,46,44,.26)); animation:wpIntroMark 3s ease forwards;}
+@keyframes wpIntroMark{0%{opacity:0; transform:scale(.92);} 14%{opacity:1; transform:scale(1);} 44%{opacity:1; transform:scale(1);} 60%{opacity:0; transform:scale(1.05);} 100%{opacity:0;}}
+@keyframes wpIntroBg{0%,64%{opacity:1;} 100%{opacity:0;}}
 
 /* Tabs */
 .wp-tabs{position:sticky; top:0; z-index:10; display:flex; gap:4px; padding:8px 12px;
