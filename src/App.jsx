@@ -701,10 +701,13 @@ export default function App() {
   const allTasks = useMemo(() => {
     const edits = data.taskEdits || {};
     const removed = data.taskRemoved || {};
-    return [...(data.showDemoTasks ? TASKS : []), ...data.customTasks]
+    const nA = data.coupleA || "Partner 1";
+    const nB = data.coupleB || "Partner 2";
+    const mapOwner = (o) => (o === "Nick" ? nA : o === "Sarah" ? nB : o);
+    return [...(data.showDemoTasks ? TASKS.map((t) => ({ ...t, owner: mapOwner(t.owner) })) : []), ...data.customTasks]
       .filter((t) => !removed[t.id])
       .map((t) => (edits[t.id] ? { ...t, ...edits[t.id] } : t));
-  }, [data.customTasks, data.taskEdits, data.taskRemoved, data.showDemoTasks]);
+  }, [data.customTasks, data.taskEdits, data.taskRemoved, data.showDemoTasks, data.coupleA, data.coupleB]);
   const allGuests = useMemo(() => [...GUESTS, ...data.customGuests], [data.customGuests]);
 
   const daysToGo = data.weddingDate ? daysUntil(data.weddingDate) : null;
@@ -845,7 +848,7 @@ function Trash() {
 }
 
 function Tasks({ tasks, data, setData }) {
-  const [ownerFilter, setOwnerFilter] = useState("Samen");
+  const [ownerFilter, setOwnerFilter] = useState("Alle");
   const [catFilter, setCatFilter] = useState("Alle");
   const [hideDone, setHideDone] = useState(false);
   const [open, setOpen] = useState(null);
@@ -854,7 +857,11 @@ function Tasks({ tasks, data, setData }) {
   const [confirmClear, setConfirmClear] = useState(false);
   const clearAll = () => { setData((d) => ({ ...d, customTasks: [], showDemoTasks: false, taskDone: {}, taskEdits: {}, taskRemoved: {} })); setConfirmClear(false); };
 
-  const owners = ["Samen", "Nick", "Sarah"];
+  const nameA = data.coupleA || "Partner 1";
+  const nameB = data.coupleB || "Partner 2";
+  const owners = [nameA, nameB, "Samen"];
+  const filterOwners = ["Alle", nameA, nameB, "Samen"];
+  const ownerColor = (o) => (o === nameA ? "#5b6b57" : o === nameB ? "#c1913f" : o === "Samen" ? "#b08d57" : "#9a8b7a");
   const categories = [...new Set(tasks.map((t) => t.category))].sort((a, b) => a.localeCompare(b, "nl"));
 
   const toggleDone = (id) =>
@@ -882,8 +889,7 @@ function Tasks({ tasks, data, setData }) {
 
   const editingTask = editing ? tasks.find((t) => t.id === editing) : null;
   const filtered = tasks.filter((t) => {
-    if (ownerFilter === "Nick" && !(t.owner === "Nick" || t.owner === "Samen")) return false;
-    if (ownerFilter === "Sarah" && !(t.owner === "Sarah" || t.owner === "Samen")) return false;
+    if (ownerFilter !== "Alle" && t.owner !== ownerFilter) return false;
     if (catFilter !== "Alle" && t.category !== catFilter) return false;
     if (hideDone && data.taskDone[t.id]) return false;
     return true;
@@ -902,7 +908,7 @@ function Tasks({ tasks, data, setData }) {
     <div className="wp-stack">
       <div className="wp-filterbar">
         <div className="wp-filterrow">
-          {owners.map((o) => (
+          {filterOwners.map((o) => (
             <button key={o} className={"wp-chip" + (ownerFilter === o ? " is-on" : "")} onClick={() => setOwnerFilter(o)}>
               {o}
             </button>
@@ -980,6 +986,7 @@ function Tasks({ tasks, data, setData }) {
 
       {adding ? (
         <AddTask
+          owners={owners}
           onAdd={(task) => {
             setData((d) => ({ ...d, customTasks: [...d.customTasks, { ...task, id: "c" + Date.now() }] }));
             setAdding(false);
@@ -1034,7 +1041,7 @@ function Tasks({ tasks, data, setData }) {
   );
 }
 
-function AddTask({ onAdd, onCancel }) {
+function AddTask({ onAdd, onCancel, owners }) {
   const [name, setName] = useState("");
   const [details, setDetails] = useState("");
   const [owner, setOwner] = useState("Samen");
@@ -1045,7 +1052,7 @@ function AddTask({ onAdd, onCancel }) {
       <input className="wp-input" placeholder="Korte omschrijving (optioneel)" value={details} onChange={(e) => setDetails(e.target.value)} />
       <div className="wp-addrow">
         <select className="wp-input" value={owner} onChange={(e) => setOwner(e.target.value)}>
-          {["Nick", "Sarah", "Samen"].map((o) => <option key={o}>{o}</option>)}
+          {owners.map((o) => <option key={o}>{o}</option>)}
         </select>
         <input className="wp-input" type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
       </div>
@@ -1591,7 +1598,7 @@ function Guests({ guests, data, setData }) {
   const invited = guests.filter(inv).length;
   const present = guests.filter(pres).length;
 
-  const sides = ["Nick", "Sarah"];
+  const sides = [data.coupleA || "Partner 1", data.coupleB || "Partner 2"];
 
   return (
     <div className="wp-stack">
