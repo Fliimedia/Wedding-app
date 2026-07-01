@@ -604,6 +604,19 @@ function VinylButton({ playing, onToggle }) {
   );
 }
 
+function WeddyLogo({ className }) {
+  return (
+    <svg className={className} viewBox="0 0 200 150" role="img" aria-label="Weddy" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="88" cy="42" r="18" stroke="#c69b5e" strokeWidth="3.4" />
+      <circle cx="112" cy="42" r="18" stroke="#b98f4e" strokeWidth="3.4" />
+      <path d="M88 15 l4.5 7 -4.5 7 -4.5 -7 z" fill="#d9b877" stroke="#c69b5e" strokeWidth="1" strokeLinejoin="round" />
+      <text x="100" y="106" textAnchor="middle" fontFamily="'Fraunces', 'Cormorant Garamond', Georgia, serif" fontSize="42" fontWeight="500" letterSpacing="0.5" fill="#26211d">Weddy</text>
+      <path d="M62 124 Q100 137 138 124" stroke="#c69b5e" strokeWidth="1.6" strokeLinecap="round" />
+      <circle cx="100" cy="131" r="2" fill="#c69b5e" />
+    </svg>
+  );
+}
+
 export default function App() {
   const { data, setData, loaded } = useStore();
   const [tab, setTab] = useState("taken");
@@ -646,7 +659,7 @@ export default function App() {
             <div className="wp-if-corner ic-br" style={{ backgroundImage: `url(${FLORAL})` }} />
             <div className="wp-intro-veil" />
           </div>
-          <img className="wp-intro-mark" src={LOGO_CREST} alt="" />
+          <WeddyLogo className="wp-intro-mark" />
         </div>
       )}
 
