@@ -10,7 +10,17 @@ const token =
 
 const redis = url && token ? new Redis({ url, token }) : null;
 
-const KEY = "wedding:planner:demo";
+const DEMO_KEY = "wedding:planner:demo";
+
+// Elke gebruiker (e-mail + pin) krijgt een eigen sleutel via ?u=<hash>.
+// Zonder geldige u valt het terug op de gedeelde demo-sleutel.
+function keyFor(req) {
+  try {
+    const u = req.query && req.query.u ? String(req.query.u) : "";
+    if (u && u !== "demo" && /^[a-z0-9_-]{6,128}$/i.test(u)) return "wedding:u:" + u;
+  } catch (e) {}
+  return DEMO_KEY;
+}
 
 export default async function handler(req, res) {
   if (!redis) {
@@ -19,6 +29,8 @@ export default async function handler(req, res) {
         "Geen database geconfigureerd. Stel UPSTASH_REDIS_REST_URL en UPSTASH_REDIS_REST_TOKEN in als Environment Variables in Vercel.",
     });
   }
+
+  const KEY = keyFor(req);
 
   try {
     if (req.method === "GET") {

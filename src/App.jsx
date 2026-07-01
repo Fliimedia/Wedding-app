@@ -320,7 +320,7 @@ const EMPTY = {
   vendors: VENDORS_SEED, // leveranciers met bewerkbare omschrijving
 };
 
-function useStore() {
+function useStore(uid) {
   const [data, setData] = useState(EMPTY);
   const [loaded, setLoaded] = useState(false);
   const saveTimer = useRef(null);
@@ -330,13 +330,14 @@ function useStore() {
   const adopting = useRef(false); // we just adopted remote -> skip the save it triggers
   const dataRef = useRef(data);
   dataRef.current = data;
+  const api = uid && uid !== "demo" ? API + "?u=" + encodeURIComponent(uid) : API;
 
   // Initial load from the shared store
   useEffect(() => {
     let alive = true;
     (async () => {
       try {
-        const r = await fetch(API);
+        const r = await fetch(api);
         if (r.ok) {
           const remote = await r.json();
           if (alive && remote && typeof remote === "object") {
@@ -364,7 +365,7 @@ function useStore() {
       const v = Date.now();
       saving.current = true;
       try {
-        await fetch(API, {
+        await fetch(api, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...data, _v: v }),
@@ -385,7 +386,7 @@ function useStore() {
     const id = setInterval(async () => {
       if (dirty.current || saving.current) return; // never clobber in-progress edits
       try {
-        const r = await fetch(API);
+        const r = await fetch(api);
         if (!r.ok) return;
         const remote = await r.json();
         if (remote && (remote._v || 0) > serverV.current) {
@@ -407,9 +408,9 @@ function useStore() {
       const payload = JSON.stringify({ ...dataRef.current, _v: Date.now() });
       try {
         if (navigator.sendBeacon) {
-          navigator.sendBeacon(API, new Blob([payload], { type: "application/json" }));
+          navigator.sendBeacon(api, new Blob([payload], { type: "application/json" }));
         } else {
-          fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: payload, keepalive: true });
+          fetch(api, { method: "POST", headers: { "Content-Type": "application/json" }, body: payload, keepalive: true });
         }
         dirty.current = false;
       } catch (e) {}
@@ -520,10 +521,6 @@ function CoupleCrest({ className, nameA, nameB }) {
     <svg className={className} viewBox="0 0 160 84" role="img" aria-label="Monogram" fill="none" xmlns="http://www.w3.org/2000/svg">
       {has ? (
         <>
-          <line x1="24" y1="42" x2="48" y2="42" stroke="#b08d57" strokeWidth="1.3" />
-          <circle cx="20" cy="42" r="1.8" fill="#b08d57" />
-          <line x1="112" y1="42" x2="136" y2="42" stroke="#b08d57" strokeWidth="1.3" />
-          <circle cx="140" cy="42" r="1.8" fill="#b08d57" />
           <text x="80" y="58" textAnchor="middle" fontFamily="'Fraunces', serif" fontSize="42" fontWeight="500" fill="#3a2e2c">{ia || "?"}<tspan fontStyle="italic" fontWeight="400" fill="#c1913f"> &amp; </tspan>{ib || "?"}</text>
         </>
       ) : (
@@ -681,6 +678,15 @@ function Onboarding({ data, setData }) {
 
   const HEART = "M100 165 C 32 116 22 74 54 52 C 79 36 100 53 100 74 C 100 53 121 36 146 52 C 178 74 168 116 100 165 Z";
 
+  const aiCreds = () => {
+    let provider = "anthropic", apiKey = "";
+    try {
+      provider = data.aiProvider || localStorage.getItem("weddy_ai_provider") || "anthropic";
+      apiKey = data.aiKey || localStorage.getItem("weddy_ai_key") || "";
+    } catch (e) {}
+    return { provider, apiKey };
+  };
+
   const finish = (skip) =>
     setData((d) => ({
       ...d,
@@ -697,7 +703,7 @@ function Onboarding({ data, setData }) {
     setErr(""); setBusy(true);
     try {
       const extracted = await extractFile(file);
-      const res = await fetch("/api/plan", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ mode: "import", nameA: a, nameB: b, weddingDate: date, ...extracted }) });
+      const res = await fetch("/api/plan", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ mode: "import", ...aiCreds(), nameA: a, nameB: b, weddingDate: date, ...extracted }) });
       const j = await res.json();
       if (!res.ok || j.error) throw new Error(j.error || "Er ging iets mis.");
       const p = j.plan || {}; p._gen = false;
@@ -710,7 +716,7 @@ function Onboarding({ data, setData }) {
     setErr(""); setBusy(true);
     try {
       const answers = OB_QUESTIONS.map((q, i) => ({ q: q.q, a: ans[i] || q.options[0] }));
-      const res = await fetch("/api/plan", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ mode: "generate", tier, nameA: a, nameB: b, weddingDate: date, answers, wish1, wish2 }) });
+      const res = await fetch("/api/plan", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ mode: "generate", ...aiCreds(), tier, nameA: a, nameB: b, weddingDate: date, answers, wish1, wish2 }) });
       const j = await res.json();
       if (!res.ok || j.error) throw new Error(j.error || "Er ging iets mis.");
       const p = j.plan || {}; p._gen = true;
@@ -972,8 +978,82 @@ function Onboarding({ data, setData }) {
   );
 }
 
-export default function App() {
-  const { data, setData, loaded } = useStore();
+async function sha256Hex(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+const ICON_ROBOT = (
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="8" width="16" height="11" rx="2.5" /><path d="M12 8V4" /><circle cx="12" cy="3" r="1" /><circle cx="9" cy="13" r="1.1" fill="currentColor" stroke="none" /><circle cx="15" cy="13" r="1.1" fill="currentColor" stroke="none" /><path d="M9.5 16.5h5" /></svg>
+);
+
+function Login({ onLogin }) {
+  const [email, setEmail] = useState("");
+  const [pin, setPin] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const [aiOpen, setAiOpen] = useState(false);
+  const [prov, setProv] = useState(() => { try { return localStorage.getItem("weddy_ai_provider") || "anthropic"; } catch (e) { return "anthropic"; } });
+  const [key, setKey] = useState(() => { try { return localStorage.getItem("weddy_ai_key") || ""; } catch (e) { return ""; } });
+  const [aiSaved, setAiSaved] = useState(false);
+
+  const submit = async () => {
+    const e = email.trim().toLowerCase();
+    const p = pin.trim();
+    if (!e || p.length < 4) { setErr("Vul een e-mailadres en een pincode (minstens 4 tekens) in."); return; }
+    setErr(""); setBusy(true);
+    try {
+      const uid = await sha256Hex(e + ":" + p);
+      onLogin(uid);
+    } catch (ex) { setErr("Inloggen mislukt. Probeer opnieuw."); setBusy(false); }
+  };
+
+  const saveAi = () => {
+    try {
+      if (key.trim()) { localStorage.setItem("weddy_ai_provider", prov); localStorage.setItem("weddy_ai_key", key.trim()); }
+      else { localStorage.removeItem("weddy_ai_key"); }
+      setAiSaved(true);
+      setTimeout(() => { setAiSaved(false); setAiOpen(false); }, 900);
+    } catch (ex) {}
+  };
+
+  return (
+    <div className="wp-login">
+      <button className="wp-login-ai" onClick={() => setAiOpen(true)} aria-label="AI koppelen">{ICON_ROBOT}<span>Connect AI</span></button>
+      <div className="wp-login-card">
+        <img className="wp-login-rings" src={RINGS_IMG} alt="Trouwringen" />
+        <h1 className="wp-login-title">Weddy</h1>
+        <p className="wp-login-sub">Log in met je e-mailadres en pincode. Je planning wordt bewaard en is op elk apparaat beschikbaar.</p>
+        <input className="wp-ob-input wp-login-input" type="email" placeholder="E-mailadres" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
+        <input className="wp-ob-input wp-login-input" type="password" inputMode="numeric" placeholder="Pincode" value={pin} onChange={(e) => setPin(e.target.value)} autoComplete="current-password" />
+        {err ? <p className="wp-ob-err">{err}</p> : null}
+        <button className="wp-ob-go wp-login-go" disabled={busy} onClick={submit}>{busy ? "Bezig..." : "Inloggen"}</button>
+        <button className="wp-login-demo" onClick={() => onLogin("demo")}>Bekijk de demo</button>
+      </div>
+
+      {aiOpen && (
+        <div className="wp-modal-back" onClick={() => setAiOpen(false)}>
+          <div className="wp-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
+            <div className="wp-modal-head">
+              <span className="wp-modal-title">AI koppelen</span>
+              <button className="wp-modal-x" onClick={() => setAiOpen(false)} aria-label="Sluiten">×</button>
+            </div>
+            <p className="wp-ai-note">Koppel je eigen sleutel om een trouwplan te importeren of te laten genereren. De sleutel wordt alleen op dit apparaat bewaard.</p>
+            <div className="wp-ai-provs">
+              <button className={"wp-ob-tier" + (prov === "anthropic" ? " is-on" : "")} onClick={() => setProv("anthropic")}><b>Anthropic</b><i>Claude</i></button>
+              <button className={"wp-ob-tier" + (prov === "openai" ? " is-on" : "")} onClick={() => setProv("openai")}><b>OpenAI</b><i>ChatGPT</i></button>
+            </div>
+            <input className="wp-ob-input wp-login-input" type="password" placeholder="API-sleutel" value={key} onChange={(e) => setKey(e.target.value)} />
+            <button className="wp-ob-go wp-login-go" onClick={saveAi}>{aiSaved ? "Opgeslagen" : "Opslaan"}</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Planner({ uid, onLogout }) {
+  const { data, setData, loaded } = useStore(uid);
   const [tab, setTab] = useState("taken");
   const [now, setNow] = useState(new Date());
   const [musicOn, toggleMusic] = useHarpMusic();
@@ -1005,7 +1085,6 @@ export default function App() {
 
   return (
     <div className="wp-root">
-      <style>{CSS}</style>
 
       {intro && (
         <div className="wp-intro" onClick={() => setIntro(false)} role="presentation">
@@ -1013,7 +1092,7 @@ export default function App() {
             <div className="wp-if-base" style={{ backgroundImage: `url(${FLORAL})` }} />
             <div className="wp-intro-veil" />
           </div>
-          <WeddyLogo className="wp-intro-mark" />
+          <img className="wp-intro-mark" src={RINGS_IMG} alt="Trouwringen" />
         </div>
       )}
 
@@ -1023,16 +1102,17 @@ export default function App() {
 
       <main className="wp-main">
         {!loaded && <p className="wp-loading">Planner laden…</p>}
-        {loaded && tab === "taken" && <Tasks tasks={allTasks} data={data} setData={setData} />}
-        {loaded && tab === "budget" && <Budget data={data} setData={setData} />}
-        {loaded && tab === "gasten" && <Guests guests={allGuests} data={data} setData={setData} />}
-        {loaded && tab === "schema" && <Schema data={data} setData={setData} />}
+        {loaded && data.onboarded && tab === "taken" && <Tasks tasks={allTasks} data={data} setData={setData} />}
+        {loaded && data.onboarded && tab === "budget" && <Budget data={data} setData={setData} />}
+        {loaded && data.onboarded && tab === "gasten" && <Guests guests={allGuests} data={data} setData={setData} />}
+        {loaded && data.onboarded && tab === "schema" && <Schema data={data} setData={setData} />}
       </main>
 
-      {loaded && !intro && !data.onboarded && <Onboarding data={data} setData={setData} />}
+      {loaded && !data.onboarded && <Onboarding data={data} setData={setData} />}
 
       <footer className="wp-footer">
         <CoupleCrest className="wp-footer-mark" nameA={data.coupleA} nameB={data.coupleB} />
+        <button className="wp-logout" onClick={onLogout}>Uitloggen</button>
       </footer>
     </div>
   );
@@ -1146,6 +1226,7 @@ function Tasks({ tasks, data, setData }) {
   const [editing, setEditing] = useState(null);
   const [adding, setAdding] = useState(false);
   const [confirmClear, setConfirmClear] = useState(false);
+  const [extrasOpen, setExtrasOpen] = useState(false);
   const clearAll = () => { setData((d) => ({ ...d, customTasks: [], showDemoTasks: false, taskDone: {}, taskEdits: {}, taskRemoved: {} })); setConfirmClear(false); };
 
   const nameA = data.coupleA || "Partner 1";
@@ -1198,25 +1279,53 @@ function Tasks({ tasks, data, setData }) {
   return (
     <div className="wp-stack">
       <div className="wp-filterbar">
-        <div className="wp-filterrow">
-          {filterOwners.map((o) => (
-            <button key={o} className={"wp-chip" + (ownerFilter === o ? " is-on" : "")} onClick={() => setOwnerFilter(o)}>
-              {o}
+        <div className="wp-filterrow-plain">
+          <FilterSelect
+            label="Naam"
+            value={ownerFilter}
+            options={[["Alle", "Alle namen"], [nameA, nameA], [nameB, nameB], ["Samen", "Samen"]]}
+            onChange={setOwnerFilter}
+          />
+          <FilterSelect
+            label="Categorie"
+            value={catFilter}
+            options={[["Alle", "Alle categorieën"], ...categories.map((c) => [c, c])]}
+            onChange={setCatFilter}
+          />
+          <div className="wp-fsel">
+            <button className={"wp-fsel-btn" + (extrasOpen ? " is-open" : "")} onClick={() => setExtrasOpen((o) => !o)} aria-haspopup="menu" aria-expanded={extrasOpen}>
+              <span className="wp-fsel-lab">Overige</span>
+              <span className="wp-fsel-val">Opties</span>
+              <span className="wp-fsel-chev" aria-hidden="true">›</span>
             </button>
-          ))}
-          <button className={"wp-chip wp-chip-toggle" + (hideDone ? " is-on" : "")} onClick={() => setHideDone((v) => !v)}>
-            {hideDone ? "Toon afgevinkt" : "Verberg afgevinkt"}
-          </button>
-          <button className={"wp-chip wp-chip-toggle" + (data.showDemoTasks ? " is-on" : "")} onClick={() => setData((d) => ({ ...d, showDemoTasks: !d.showDemoTasks }))}>
-            {data.showDemoTasks ? "Demo-taken aan" : "Demo-taken"}
-          </button>
+            {extrasOpen && (
+              <>
+                <div className="wp-fsel-backdrop" onClick={() => { setExtrasOpen(false); setConfirmClear(false); }} />
+                <div className="wp-fsel-menu wp-extras-menu" role="menu">
+                  <button className="wp-fsel-opt" onClick={() => setHideDone((v) => !v)}>
+                    <span>Verberg afgevinkt</span>
+                    {hideDone && <span className="wp-fsel-tick" aria-hidden="true">✓</span>}
+                  </button>
+                  <button className="wp-fsel-opt" onClick={() => setData((d) => ({ ...d, showDemoTasks: !d.showDemoTasks }))}>
+                    <span>Demo-taken tonen</span>
+                    {data.showDemoTasks && <span className="wp-fsel-tick" aria-hidden="true">✓</span>}
+                  </button>
+                  {tasks.length > 0 && (confirmClear ? (
+                    <div className="wp-extras-danger">
+                      <span>Hele lijst legen?</span>
+                      <div className="wp-extras-danger-row">
+                        <button className="wp-btn-ghost" onClick={() => setConfirmClear(false)}>Annuleren</button>
+                        <button className="wp-btn-danger" onClick={() => { clearAll(); setExtrasOpen(false); }}>Legen</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button className="wp-fsel-opt wp-extras-del" onClick={() => setConfirmClear(true)}>Hele lijst verwijderen</button>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
         </div>
-        <FilterSelect
-          label="Categorie"
-          value={catFilter}
-          options={[["Alle", "Alle categorieën"], ...categories.map((c) => [c, c])]}
-          onChange={setCatFilter}
-        />
       </div>
 
       {groupKeys.map((sunday) => {
@@ -1286,20 +1395,6 @@ function Tasks({ tasks, data, setData }) {
         />
       ) : (
         <button className="wp-add-btn" onClick={() => setAdding(true)}>+ Taak toevoegen</button>
-      )}
-
-      {tasks.length > 0 && (
-        <div className="wp-clear-row">
-          {confirmClear ? (
-            <div className="wp-clear-confirm">
-              <span>Hele lijst legen?</span>
-              <button className="wp-btn-ghost" onClick={() => setConfirmClear(false)}>Annuleren</button>
-              <button className="wp-btn-danger" onClick={clearAll}>Legen</button>
-            </div>
-          ) : (
-            <button className="wp-clear-btn" onClick={() => setConfirmClear(true)} aria-label="Lijst legen"><Trash /> Lijst legen</button>
-          )}
-        </div>
       )}
 
       {editingTask && (
@@ -1845,7 +1940,6 @@ function Budget({ data, setData }) {
               </span>
             </li>
           ))}
-          {begroting.length === 0 && <li className="wp-empty">Geen openstaande begroting. Voeg een post toe of zet een budget bij een taak.</li>}
         </ul>
         {addPost ? (
           <InlineAdd placeholder="Naam kostenpost (bijv. Fotograaf)" onAdd={(name) => { addPostItem(name); setAddPost(false); }} onCancel={() => setAddPost(false)} />
@@ -1934,7 +2028,6 @@ function Guests({ guests, data, setData }) {
                 </ul>
               </div>
             ))}
-            {sideGuests.length === 0 && <p className="wp-empty">Nog geen gasten van {s}. Voeg ze hieronder toe.</p>}
           </Collapsible>
         );
       })}
@@ -2317,7 +2410,7 @@ const CSS = `
 /* footer */
 .wp-footer{display:flex; justify-content:center; align-items:center; padding:24px 18px 34px;}
 .wp-footer-mark{width:44px; height:auto; opacity:.85;}
-.wp-hero-rings{display:block; margin:0 auto 8px; width:150px; height:auto; filter:drop-shadow(0 3px 8px rgba(58,46,44,.14));}
+.wp-hero-rings{display:block; margin:0 auto 8px; width:98px; height:auto; filter:drop-shadow(0 3px 8px rgba(58,46,44,.14));}
 .wp-clear-row{display:flex; justify-content:center; margin-top:2px;}
 .wp-clear-btn{display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border:1px solid var(--line); background:transparent; color:var(--muted); border-radius:12px; font-size:13px; font-weight:600; cursor:pointer;}
 .wp-clear-btn:hover{color:var(--rose); border-color:var(--rose);}
@@ -2403,6 +2496,23 @@ const CSS = `
 .wp-pl-owner{color:var(--muted); font-size:12.5px;}
 .wp-pl-total{font-weight:700; border-bottom:none; margin-top:4px;}
 .wp-pl-empty{font-size:13px; color:var(--muted); padding:6px 0;}
+.wp-extras-menu{min-width:210px;}
+.wp-extras-del{color:#b23b3b;}
+.wp-extras-danger{padding:10px 12px; border-top:1px solid var(--line);}
+.wp-extras-danger>span{display:block; font-size:13px; color:var(--ink); margin-bottom:8px;}
+.wp-extras-danger-row{display:flex; gap:8px; justify-content:flex-end;}
+.wp-login{position:fixed; inset:0; z-index:1100; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow-y:auto; padding:60px 22px 40px; background:radial-gradient(125% 90% at 50% 26%, #ffffff 0%, var(--paper) 52%, #f1e2dc 100%); text-align:center;}
+.wp-login-ai{position:absolute; top:16px; right:16px; display:inline-flex; align-items:center; gap:7px; padding:8px 14px; border:1px solid #e7cf9c; border-radius:999px; background:linear-gradient(120deg,#fff,#fbf3e5); color:#a97f33; font-size:13px; font-weight:600; cursor:pointer;}
+.wp-login-card{width:100%; max-width:360px; margin:auto 0; display:flex; flex-direction:column; align-items:center;}
+.wp-login-rings{width:110px; height:auto; margin-bottom:6px; filter:drop-shadow(0 3px 8px rgba(58,46,44,.14));}
+.wp-login-title{font-family:'Fraunces',serif; font-weight:500; font-size:40px; color:var(--ink); margin:0 0 6px;}
+.wp-login-sub{font-size:14.5px; line-height:1.5; color:var(--muted); margin:0 0 22px;}
+.wp-login-input{width:100%; box-sizing:border-box; margin-bottom:12px; text-align:center;}
+.wp-login-go{width:100%; margin-top:4px;}
+.wp-login-demo{margin-top:16px; background:none; border:none; color:var(--muted); font-size:13.5px; text-decoration:underline; cursor:pointer;}
+.wp-ai-note{font-size:13.5px; line-height:1.5; color:var(--muted); margin:2px 0 14px;}
+.wp-ai-provs{display:flex; gap:8px; margin-bottom:12px;}
+.wp-logout{margin-top:12px; background:none; border:none; color:var(--muted); font-size:12.5px; text-decoration:underline; cursor:pointer;}
 
 /* schema */
 .wp-sched{display:flex; flex-direction:column;}
@@ -2441,3 +2551,14 @@ const CSS = `
   .wp-root *{transition:none !important; animation:none !important;}
 }
 `;
+export default function App() {
+  const [uid, setUid] = useState(() => { try { return localStorage.getItem("weddy_uid"); } catch (e) { return null; } });
+  const login = (u) => { try { localStorage.setItem("weddy_uid", u); } catch (e) {} setUid(u); };
+  const logout = () => { try { localStorage.removeItem("weddy_uid"); } catch (e) {} setUid(null); };
+  return (
+    <>
+      <style>{CSS}</style>
+      {uid ? <Planner key={uid} uid={uid} onLogout={logout} /> : <Login onLogin={login} />}
+    </>
+  );
+}

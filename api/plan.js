@@ -74,6 +74,35 @@ async function callAnthropic(apiKey, system, content) {
   return text;
 }
 
+async function callOpenAI(apiKey, system, userText) {
+  const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      authorization: "Bearer " + apiKey,
+    },
+    body: JSON.stringify({
+      model: process.env.OPENAI_MODEL || "gpt-4o",
+      max_tokens: 4096,
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: userText },
+      ],
+    }),
+  });
+  const raw = await resp.text();
+  if (!resp.ok) {
+    throw new Error("OpenAI API fout (" + resp.status + "): " + raw.slice(0, 400));
+  }
+  let data;
+  try {
+    data = JSON.parse(raw);
+  } catch (e) {
+    throw new Error("Kon OpenAI-antwoord niet lezen.");
+  }
+  return (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || "";
+}
+
 function parsePlan(text) {
   let t = (text || "").trim();
   t = t.replace(/^```json/i, "").replace(/^```/, "").replace(/```$/, "").trim();
@@ -88,57 +117,64 @@ export default async function handler(req, res) {
     res.setHeader("Allow", "POST");
     return res.status(405).json({ error: "Methode niet toegestaan" });
   }
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const body =
+    typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
+  const provider = body.provider === "openai" ? "openai" : "anthropic";
+  const userKey = typeof body.apiKey === "string" ? body.apiKey.trim() : "";
+  const apiKey =
+    userKey ||
+    (provider === "openai" ? process.env.OPENAI_API_KEY : process.env.ANTHROPIC_API_KEY) ||
+    "";
   if (!apiKey) {
     return res.status(500).json({
       error:
-        "Geen AI-sleutel geconfigureerd. Stel ANTHROPIC_API_KEY in als Environment Variable in Vercel.",
+        "Geen AI-sleutel gevonden. Koppel je eigen sleutel via 'Connect AI', of stel ANTHROPIC_API_KEY in als Environment Variable in Vercel.",
     });
   }
 
   try {
-    const body =
-      typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
     const { mode, nameA, nameB, weddingDate } = body;
     const sys =
       "Je bent een ervaren Nederlandse trouwplanner. Je zet input om in een concreet, realistisch trouwplan. " +
       schema(nameA, nameB);
 
-    let content;
+    let userText;
 
     if (mode === "import") {
-      if (body.pdf) {
-        content = [
-          { type: "document", source: { type: "base64", media_type: "application/pdf", data: body.pdf } },
-          { type: "text", text: "Interpreteer dit trouwplan-document en zet het om naar het JSON-schema. Neem taken, budgetposten en (indien aanwezig) gasten met echte namen over." },
-        ];
-      } else {
-        content = [
-          { type: "text", text: "Interpreteer dit trouwplan en zet het om naar het JSON-schema. Neem taken, budgetposten en (indien aanwezig) gasten met echte namen over.\n\nDOCUMENT:\n" + String(body.text || "").slice(0, 60000) },
-        ];
-      }
+      userText =
+        "Interpreteer dit trouwplan en zet het om naar het JSON-schema. Neem taken, budgetposten en (indien aanwezig) gasten met echte namen over.\n\nDOCUMENT:\n" +
+        String(body.text || "").slice(0, 60000);
     } else if (mode === "generate") {
       const tierLabel = { budget: "Budgetvriendelijk", standaard: "Standaard", luxe: "Luxe" }[body.tier] || "Standaard";
       const qa = (body.answers || []).map((a) => "- " + a.q + ": " + a.a).join("\n");
-      content = [
-        {
-          type: "text",
-          text:
-            "Genereer een compleet trouwplan.\n" +
-            "Namen: " + (nameA || "onbekend") + " & " + (nameB || "onbekend") + "\n" +
-            "Trouwdatum: " + (weddingDate || "nog onbekend") + "\n" +
-            "Niveau: " + tierLabel + "\n\n" +
-            "Keuzes:\n" + qa + "\n\n" +
-            "Bijzondere wensen 1: " + (body.wish1 || "-") + "\n" +
-            "Bijzondere wensen 2: " + (body.wish2 || "-") + "\n\n" +
-            "Maak een dagschema, een gecategoriseerde takenlijst, een budgetverdeling passend bij het niveau, en een gastenverdeling (guestBreakdown met aantallen; guests leeg laten). Geef ook een korte beschrijving.",
-        },
-      ];
+      userText =
+        "Genereer een compleet trouwplan.\n" +
+        "Namen: " + (nameA || "onbekend") + " & " + (nameB || "onbekend") + "\n" +
+        "Trouwdatum: " + (weddingDate || "nog onbekend") + "\n" +
+        "Niveau: " + tierLabel + "\n\n" +
+        "Keuzes:\n" + qa + "\n\n" +
+        "Bijzondere wensen 1: " + (body.wish1 || "-") + "\n" +
+        "Bijzondere wensen 2: " + (body.wish2 || "-") + "\n\n" +
+        "Maak een dagschema, een gecategoriseerde takenlijst, een budgetverdeling passend bij het niveau, en een gastenverdeling (guestBreakdown met aantallen; guests leeg laten). Geef ook een korte beschrijving.";
     } else {
       return res.status(400).json({ error: "Onbekende modus" });
     }
 
-    const text = await callAnthropic(apiKey, sys, content);
+    let text;
+    if (provider === "openai") {
+      if (mode === "import" && body.pdf) {
+        return res.status(400).json({ error: "PDF importeren kan alleen met Anthropic. Gebruik Excel of Word, of koppel een Anthropic-sleutel." });
+      }
+      text = await callOpenAI(apiKey, sys, userText);
+    } else if (mode === "import" && body.pdf) {
+      const content = [
+        { type: "document", source: { type: "base64", media_type: "application/pdf", data: body.pdf } },
+        { type: "text", text: "Interpreteer dit trouwplan-document en zet het om naar het JSON-schema. Neem taken, budgetposten en (indien aanwezig) gasten met echte namen over." },
+      ];
+      text = await callAnthropic(apiKey, sys, content);
+    } else {
+      text = await callAnthropic(apiKey, sys, [{ type: "text", text: userText }]);
+    }
     let plan;
     try {
       plan = parsePlan(text);
