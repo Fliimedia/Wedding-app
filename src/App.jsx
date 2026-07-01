@@ -676,6 +676,8 @@ function Onboarding({ data, setData }) {
   const [plan, setPlan] = useState(null);
   const [openSec, setOpenSec] = useState("schedule");
 
+  const stepValid = step === 1 ? !!(a.trim() && b.trim()) : step === 2 ? !!date : (budget.trim() !== "" && parseFloat(budget) > 0);
+
   const HEART = "M100 165 C 32 116 22 74 54 52 C 79 36 100 53 100 74 C 100 53 121 36 146 52 C 178 74 168 116 100 165 Z";
 
   const aiCreds = () => {
@@ -731,6 +733,17 @@ function Onboarding({ data, setData }) {
       const nB = ((plan.coupleB || b || d.coupleB) || "").trim();
       const wd = plan.weddingDate || date || d.weddingDate || "";
       const now = Date.now();
+      const bd = plan.guestBreakdown || [];
+      let guestSrc = (plan.guests && plan.guests.length) ? plan.guests.slice() : [];
+      if (!guestSrc.length && bd.length) {
+        bd.forEach((gb) => {
+          const grp = gb.group || gb.label || gb.categorie || gb.category || "Gasten";
+          const sd = gb.side || nA || "Partner 1";
+          const cnt = Math.max(0, Math.min(60, Math.round(gb.count || gb.aantal || gb.n || 0)));
+          for (let k = 0; k < cnt; k++) guestSrc.push({ name: grp + " " + (k + 1), category: grp, side: sd, inv: true, pres: false });
+        });
+        if (guestSrc.length > 200) guestSrc = guestSrc.slice(0, 200);
+      }
       return {
         ...d,
         onboarded: true,
@@ -740,7 +753,7 @@ function Onboarding({ data, setData }) {
         budget: plan.budget || (budget ? Math.round(parseFloat(budget)) : 0) || d.budget,
         customTasks: [...d.customTasks, ...((plan.tasks) || []).map((t, i) => ({ id: "ai" + now + "_" + i, name: t.name || "Taak", category: t.category || "Planning & logistiek", owner: t.owner || "Samen", deadline: t.deadline || wd || "", details: t.details || "" }))],
         posten: [...d.posten, ...((plan.posten) || []).map((p, i) => ({ id: "aip" + now + "_" + i, name: p.name || "Post", amount: Math.round(p.amount) || 0 }))],
-        customGuests: [...d.customGuests, ...((plan.guests) || []).map((g, i) => ({ id: "aig" + now + "_" + i, name: g.name || "Gast", category: g.category || "Familie & vrienden", side: g.side || nA || "Partner 1", inv: g.inv !== false, pres: !!g.pres }))],
+        customGuests: [...d.customGuests, ...guestSrc.map((g, i) => ({ id: "aig" + now + "_" + i, name: g.name || "Gast", category: g.category || "Familie & vrienden", side: g.side || nA || "Partner 1", inv: g.inv !== false, pres: !!g.pres }))],
         schedule: (plan.schedule && plan.schedule.length) ? [{ phase: "Dagschema", rows: plan.schedule.map((sc, i) => ({ id: "ais" + i, time: sc.time || "", what: sc.title || sc.what || "", travel: null, roles: ["paar"] })) }] : d.schedule,
       };
     });
@@ -835,8 +848,6 @@ function Onboarding({ data, setData }) {
 
   return (
     <div className="wp-ob">
-      <button className="wp-ob-skip2" onClick={() => finish(true)}>Overslaan</button>
-
       {screen === "hero" && (
         <div className="wp-ob-hero">
           <svg className="wp-ob-heart" viewBox="0 0 200 180" aria-hidden="true">
@@ -845,26 +856,24 @@ function Onboarding({ data, setData }) {
           </svg>
           <h2 className="wp-ob-title wp-ob-fadein">Welkom bij Weddy</h2>
           <p className="wp-ob-sub wp-ob-fadein">Laten we jullie trouwdag plannen.</p>
-          <button className="wp-ob-go wp-ob-fadein wp-ob-herogo" onClick={() => setScreen("choose")}>Beginnen</button>
+          <button className="wp-ob-go wp-ob-fadein wp-ob-herogo" onClick={() => { setScreen("manual"); setStep(1); }}>Beginnen</button>
         </div>
       )}
 
-      {screen === "choose" && (
+      {screen === "options" && (
         <div className="wp-ob-stepwrap wp-ob-step">
-          <h2 className="wp-ob-q">Hoe wil je beginnen?</h2>
-          <p className="wp-ob-hint">Kies hoe je jullie planning opzet.</p>
-          <button className="wp-ob-card" onClick={() => { setScreen("manual"); setStep(1); }}>
-            <span className="wp-ob-cardic">{ICON_PENCIL}</span>
-            <span className="wp-ob-cardtx"><b>Zelf invullen</b><i>Namen, datum en budget</i></span>
-          </button>
+          <h2 className="wp-ob-q">Wil je AI je plan laten invullen?</h2>
+          <p className="wp-ob-hint">Optioneel. AI maakt een compleet plan of zet je bestaande plan om naar to-do's, budget, dagschema en gastenlijst.</p>
           <button className="wp-ob-card" onClick={() => { setErr(""); setScreen("upload"); }}>
             <span className="wp-ob-cardic">{ICON_UPLOAD}</span>
-            <span className="wp-ob-cardtx"><b>Trouwplan uploaden</b><i>Excel of Word, AI zet het om</i></span>
+            <span className="wp-ob-cardtx"><b>Trouwplan uploaden</b><i>Excel, Word of PDF, AI zet het om</i></span>
           </button>
           <button className="wp-ob-card wp-ob-card-ai" onClick={() => { setErr(""); setScreen("generate"); }}>
             <span className="wp-ob-cardic">{ICON_SPARK}</span>
             <span className="wp-ob-cardtx"><b>Laat AI een plan maken</b><i>Beantwoord een paar vragen</i></span>
           </button>
+          <button className="wp-ob-skip-opt" onClick={() => finish(false)}>Overslaan en zelf invullen</button>
+          <button className="wp-ob-back wp-ob-back-solo" onClick={() => { setStep(3); setScreen("manual"); }}>Terug</button>
         </div>
       )}
 
@@ -896,7 +905,7 @@ function Onboarding({ data, setData }) {
               <>
                 <span className="wp-ob-count">Stap 3 van 3</span>
                 <h2 className="wp-ob-q">Wat is jullie budget?</h2>
-                <p className="wp-ob-hint">Optioneel. Je kunt dit later altijd aanpassen.</p>
+                <p className="wp-ob-hint">Verplicht. Je kunt dit later altijd aanpassen.</p>
                 <div className="wp-ob-budget">
                   <span className="wp-ob-eur">&euro;</span>
                   <input className="wp-ob-input wp-ob-input-lg" type="number" placeholder="20000" value={budget} onChange={(e) => setBudget(e.target.value)} />
@@ -905,11 +914,11 @@ function Onboarding({ data, setData }) {
             )}
           </div>
           <div className="wp-ob-nav">
-            <button className="wp-ob-back" onClick={() => (step > 1 ? setStep(step - 1) : setScreen("choose"))}>Terug</button>
+            <button className="wp-ob-back" onClick={() => (step > 1 ? setStep(step - 1) : setScreen("hero"))}>Terug</button>
             {step < 3 ? (
-              <button className="wp-ob-go" onClick={() => setStep(step + 1)}>Volgende</button>
+              <button className="wp-ob-go" disabled={!stepValid} onClick={() => setStep(step + 1)}>Volgende</button>
             ) : (
-              <button className="wp-ob-go" onClick={() => finish(false)}>Aan de slag</button>
+              <button className="wp-ob-go" disabled={!stepValid} onClick={() => setScreen("options")}>Volgende</button>
             )}
           </div>
         </div>
@@ -929,7 +938,7 @@ function Onboarding({ data, setData }) {
             </label>
           )}
           {err ? <p className="wp-ob-err">{err}</p> : null}
-          <button className="wp-ob-back wp-ob-back-solo" onClick={() => { setErr(""); setScreen("choose"); }}>Terug</button>
+          <button className="wp-ob-back wp-ob-back-solo" onClick={() => { setErr(""); setScreen("options"); }}>Terug</button>
         </div>
       )}
 
@@ -966,7 +975,7 @@ function Onboarding({ data, setData }) {
           <textarea className="wp-ob-ta" placeholder="Bijzondere wens 2" value={wish2} onChange={(e) => setWish2(e.target.value)} />
           {err ? <p className="wp-ob-err">{err}</p> : null}
           <div className="wp-ob-nav">
-            <button className="wp-ob-back" onClick={() => { setErr(""); setScreen("choose"); }}>Terug</button>
+            <button className="wp-ob-back" onClick={() => { setErr(""); setScreen("options"); }}>Terug</button>
             <button className="wp-ob-go" disabled={busy} onClick={runGenerate}>{busy ? "Bezig..." : "Genereer plan"}</button>
           </div>
           {busy ? <div className="wp-ob-busy"><span className="wp-spin" />AI stelt jullie plan samen...</div> : null}
@@ -1039,6 +1048,19 @@ function Login({ onLogin }) {
               <button className="wp-modal-x" onClick={() => setAiOpen(false)} aria-label="Sluiten">×</button>
             </div>
             <p className="wp-ai-note">Koppel je eigen sleutel om een trouwplan te importeren of te laten genereren. De sleutel wordt alleen op dit apparaat bewaard.</p>
+            <div className="wp-ai-explain">
+              <p className="wp-ai-explain-h">De app doet twee soorten AI-verzoeken:</p>
+              <ol className="wp-ai-explain-list">
+                <li>Een trouwplan laten <b>maken</b> (genereren).</li>
+                <li>Een plan <b>omzetten</b> naar app-inhoud: to-do's, budget, dagschema en gastenlijst.</li>
+              </ol>
+              <div className="wp-ai-cost">
+                <div className="wp-ai-cost-row wp-ai-cost-head"><span>Kosten per verzoek</span><span>Plan maken</span><span>Omzetten</span></div>
+                <div className="wp-ai-cost-row"><span>Anthropic (Claude)</span><span>&euro;0,04-0,06</span><span>&euro;0,05-0,12</span></div>
+                <div className="wp-ai-cost-row"><span>OpenAI (ChatGPT)</span><span>&euro;0,03-0,04</span><span>&euro;0,03-0,08</span></div>
+              </div>
+              <p className="wp-ai-cost-note">Ruwe schatting op basis van lijstprijzen (juli 2026, Claude Sonnet 4.6 en GPT-4o) en gemiddeld tokengebruik. Omzetten kost meer bij grote documenten.</p>
+            </div>
             <div className="wp-ai-provs">
               <button className={"wp-ob-tier" + (prov === "anthropic" ? " is-on" : "")} onClick={() => setProv("anthropic")}><b>Anthropic</b><i>Claude</i></button>
               <button className={"wp-ob-tier" + (prov === "openai" ? " is-on" : "")} onClick={() => setProv("openai")}><b>OpenAI</b><i>ChatGPT</i></button>
@@ -2512,6 +2534,16 @@ const CSS = `
 .wp-login-demo{margin-top:16px; background:none; border:none; color:var(--muted); font-size:13.5px; text-decoration:underline; cursor:pointer;}
 .wp-ai-note{font-size:13.5px; line-height:1.5; color:var(--muted); margin:2px 0 14px;}
 .wp-ai-provs{display:flex; gap:8px; margin-bottom:12px;}
+.wp-ai-explain{margin:0 0 14px; text-align:left;}
+.wp-ai-explain-h{font-size:13px; color:var(--ink); margin:0 0 6px; font-weight:600;}
+.wp-ai-explain-list{margin:0 0 10px; padding-left:18px; font-size:12.5px; color:var(--muted); line-height:1.5;}
+.wp-ai-cost{border:1px solid var(--line); border-radius:12px; overflow:hidden;}
+.wp-ai-cost-row{display:grid; grid-template-columns:1.35fr 1fr 1fr; gap:6px; padding:8px 10px; font-size:12px; color:var(--ink); border-top:1px solid var(--line);}
+.wp-ai-cost-row:first-child{border-top:none;}
+.wp-ai-cost-head{background:var(--paper2); color:var(--muted); font-weight:600;}
+.wp-ai-cost-row span:not(:first-child){text-align:right; font-variant-numeric:tabular-nums;}
+.wp-ai-cost-note{font-size:11.5px; color:var(--muted); line-height:1.45; margin:8px 0 0;}
+.wp-ob-skip-opt{margin-top:6px; background:none; border:none; color:var(--muted); font-size:13.5px; text-decoration:underline; cursor:pointer;}
 .wp-logout{margin-top:12px; background:none; border:none; color:var(--muted); font-size:12.5px; text-decoration:underline; cursor:pointer;}
 
 /* schema */
