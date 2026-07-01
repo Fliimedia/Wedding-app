@@ -536,36 +536,70 @@ function CoupleCrest({ className, nameA, nameB }) {
 
 function RingsLogo({ className }) {
   return (
-    <svg className={className} viewBox="0 0 210 140" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Trouwringen">
+    <svg className={className} viewBox="0 0 220 150" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Trouwringen">
       <defs>
-        <linearGradient id="wpGold" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f6dc95" />
-          <stop offset="0.5" stopColor="#cb9c4f" />
-          <stop offset="1" stopColor="#a67d34" />
+        <linearGradient id="wpGold" x1="0" y1="0" x2="0.85" y2="1">
+          <stop offset="0" stopColor="#fbe6ad" />
+          <stop offset="0.35" stopColor="#e6bd68" />
+          <stop offset="0.7" stopColor="#c1913f" />
+          <stop offset="1" stopColor="#9c7529" />
         </linearGradient>
-        <linearGradient id="wpGem" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="wpGoldB" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#f7d987" />
+          <stop offset="0.5" stopColor="#cd9f4c" />
+          <stop offset="1" stopColor="#a37c33" />
+        </linearGradient>
+        <radialGradient id="wpGem" cx="0.42" cy="0.36" r="0.75">
           <stop offset="0" stopColor="#ffffff" />
-          <stop offset="1" stopColor="#d6e6f2" />
-        </linearGradient>
+          <stop offset="0.55" stopColor="#eaf3fb" />
+          <stop offset="1" stopColor="#c3d7e8" />
+        </radialGradient>
       </defs>
-      <g transform="rotate(-17 78 78)">
-        <ellipse cx="78" cy="78" rx="29" ry="43" stroke="url(#wpGold)" strokeWidth="10" />
+
+      {/* plain polished band - back left, tilted */}
+      <g transform="rotate(-24 80 84)">
+        <ellipse cx="80" cy="84" rx="37" ry="49" stroke="url(#wpGold)" strokeWidth="13" />
+        <ellipse cx="76" cy="80" rx="37" ry="49" stroke="#fbeeba" strokeWidth="2.4" opacity="0.6" />
       </g>
-      <ellipse cx="134" cy="84" rx="29" ry="39" stroke="url(#wpGold)" strokeWidth="7" />
-      <g stroke="#cb9c4f" strokeWidth="2">
-        <line x1="134" y1="47" x2="127" y2="37" />
-        <line x1="134" y1="47" x2="141" y2="37" />
+
+      {/* diamond ring band - front right */}
+      <ellipse cx="142" cy="92" rx="34" ry="45" stroke="url(#wpGoldB)" strokeWidth="8" />
+      <path d="M113 118 A34 45 0 0 0 171 118" stroke="#b48a3d" strokeWidth="9.5" fill="none" strokeLinecap="round" opacity="0.55" />
+
+      {/* prongs */}
+      <g stroke="#c1913f" strokeWidth="2.4" strokeLinecap="round">
+        <line x1="142" y1="45" x2="134" y2="35" />
+        <line x1="142" y1="45" x2="150" y2="35" />
+        <line x1="128" y1="52" x2="122" y2="49" />
+        <line x1="156" y1="52" x2="162" y2="49" />
       </g>
-      <polygon points="134,28 150,40 134,60 118,40" fill="url(#wpGem)" stroke="#bcd0e0" strokeWidth="1" />
-      <polyline points="118,40 134,46 150,40" fill="none" stroke="#bcd0e0" strokeWidth="1" />
-      <line x1="134" y1="28" x2="134" y2="46" stroke="#c9dbea" strokeWidth="0.8" />
-      <path d="M112 54 q-7 5 -3 13 q4 5 9 2 q3 -4 -1 -11 z" fill="url(#wpGem)" stroke="#bcd0e0" strokeWidth="0.8" />
-      <path d="M156 54 q7 5 3 13 q-4 5 -9 2 q-3 -4 1 -11 z" fill="url(#wpGem)" stroke="#bcd0e0" strokeWidth="0.8" />
+
+      {/* left pear side stone */}
+      <path d="M120 47 q-11 3 -12 15 q0 9 9 10 q9 -1 11 -12 q0 -10 -8 -13 z" fill="url(#wpGem)" stroke="#a9c2d6" strokeWidth="0.8" />
+      <path d="M110 60 l10 4 l6 -11" stroke="#c6d9e8" strokeWidth="0.7" fill="none" />
+
+      {/* right pear side stone */}
+      <path d="M164 47 q11 3 12 15 q0 9 -9 10 q-9 -1 -11 -12 q0 -10 8 -13 z" fill="url(#wpGem)" stroke="#a9c2d6" strokeWidth="0.8" />
+      <path d="M174 60 l-10 4 l-6 -11" stroke="#c6d9e8" strokeWidth="0.7" fill="none" />
+
+      {/* center round brilliant diamond */}
+      <circle cx="142" cy="43" r="15" fill="url(#wpGem)" stroke="#9db9cf" strokeWidth="1" />
+      <polygon points="142,33 151,39 148,50 136,50 133,39" fill="#ffffff" stroke="#bcd3e4" strokeWidth="0.7" opacity="0.92" />
+      <g stroke="#bcd3e4" strokeWidth="0.7">
+        <line x1="142" y1="28" x2="142" y2="33" />
+        <line x1="128" y1="43" x2="133" y2="43" />
+        <line x1="156" y1="43" x2="151" y2="43" />
+        <line x1="132" y1="54" x2="136" y2="50" />
+        <line x1="152" y1="54" x2="148" y2="50" />
+        <line x1="142" y1="58" x2="142" y2="50" />
+      </g>
+      <circle cx="137" cy="38" r="2.6" fill="#ffffff" opacity="0.9" />
     </svg>
   );
 }
 
 function Onboarding({ data, setData }) {
+  const [step, setStep] = useState(0);
   const [a, setA] = useState(data.coupleA || "");
   const [b, setB] = useState(data.coupleB || "");
   const [date, setDate] = useState(data.weddingDate || "");
@@ -581,27 +615,66 @@ function Onboarding({ data, setData }) {
         budget: budget ? Math.round(parseFloat(budget)) || d.budget : d.budget,
       }),
     }));
+  const HEART = "M100 165 C 32 116 22 74 54 52 C 79 36 100 53 100 74 C 100 53 121 36 146 52 C 178 74 168 116 100 165 Z";
   return (
-    <div className="wp-ob-back">
-      <div className="wp-ob" role="dialog" aria-modal="true">
-        <RingsLogo className="wp-ob-rings" />
-        <h2 className="wp-ob-title">Welkom bij Weddy</h2>
-        <p className="wp-ob-sub">Vul een paar gegevens in om te starten. Gasten, budget en taken voeg je daarna zelf toe.</p>
-        <label className="wp-ob-lab">Namen</label>
-        <div className="wp-ob-names">
-          <input className="wp-ob-input" placeholder="Naam 1" value={a} onChange={(e) => setA(e.target.value)} />
-          <span className="wp-ob-amp">&amp;</span>
-          <input className="wp-ob-input" placeholder="Naam 2" value={b} onChange={(e) => setB(e.target.value)} />
+    <div className="wp-ob">
+      <button className="wp-ob-skip2" onClick={() => finish(true)}>Overslaan</button>
+      {step === 0 ? (
+        <div className="wp-ob-hero">
+          <svg className="wp-ob-heart" viewBox="0 0 200 180" aria-hidden="true">
+            <path className="wp-heart-fill" d={HEART} fill="#b5546a" />
+            <path className="wp-heart-path" d={HEART} fill="none" stroke="#b5546a" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <h2 className="wp-ob-title wp-ob-fadein">Welkom bij Weddy</h2>
+          <p className="wp-ob-sub wp-ob-fadein">Laten we jullie trouwdag plannen. Een paar vragen om te starten.</p>
+          <button className="wp-ob-go wp-ob-fadein wp-ob-herogo" onClick={() => setStep(1)}>Beginnen</button>
         </div>
-        <label className="wp-ob-lab">Trouwdatum</label>
-        <input className="wp-ob-input" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-        <label className="wp-ob-lab">Budget (optioneel)</label>
-        <input className="wp-ob-input" type="number" placeholder="bijv. 20000" value={budget} onChange={(e) => setBudget(e.target.value)} />
-        <div className="wp-ob-actions">
-          <button className="wp-ob-skip" onClick={() => finish(true)}>Overslaan</button>
-          <button className="wp-ob-go" onClick={() => finish(false)}>Aan de slag</button>
+      ) : (
+        <div className="wp-ob-stepwrap">
+          <div className="wp-ob-dots">
+            {[1, 2, 3].map((n) => <span key={n} className={"wp-ob-dot" + (n <= step ? " is-on" : "")} />)}
+          </div>
+          <div className="wp-ob-step" key={step}>
+            {step === 1 && (
+              <>
+                <span className="wp-ob-count">Stap 1 van 3</span>
+                <h2 className="wp-ob-q">Wie gaan er trouwen?</h2>
+                <div className="wp-ob-names">
+                  <input className="wp-ob-input" placeholder="Naam 1" value={a} onChange={(e) => setA(e.target.value)} autoFocus />
+                  <span className="wp-ob-amp">&amp;</span>
+                  <input className="wp-ob-input" placeholder="Naam 2" value={b} onChange={(e) => setB(e.target.value)} />
+                </div>
+              </>
+            )}
+            {step === 2 && (
+              <>
+                <span className="wp-ob-count">Stap 2 van 3</span>
+                <h2 className="wp-ob-q">Wanneer is de grote dag?</h2>
+                <input className="wp-ob-input wp-ob-input-lg" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+              </>
+            )}
+            {step === 3 && (
+              <>
+                <span className="wp-ob-count">Stap 3 van 3</span>
+                <h2 className="wp-ob-q">Wat is jullie budget?</h2>
+                <p className="wp-ob-hint">Optioneel. Je kunt dit later altijd aanpassen.</p>
+                <div className="wp-ob-budget">
+                  <span className="wp-ob-eur">&euro;</span>
+                  <input className="wp-ob-input wp-ob-input-lg" type="number" placeholder="20000" value={budget} onChange={(e) => setBudget(e.target.value)} />
+                </div>
+              </>
+            )}
+          </div>
+          <div className="wp-ob-nav">
+            <button className="wp-ob-back" onClick={() => setStep((x) => x - 1)}>Terug</button>
+            {step < 3 ? (
+              <button className="wp-ob-go" onClick={() => setStep((x) => x + 1)}>Volgende</button>
+            ) : (
+              <button className="wp-ob-go" onClick={() => finish(false)}>Aan de slag</button>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -642,10 +715,6 @@ export default function App() {
         <div className="wp-intro" onClick={() => setIntro(false)} role="presentation">
           <div className="wp-intro-art" aria-hidden="true">
             <div className="wp-if-base" style={{ backgroundImage: `url(${FLORAL})` }} />
-            <div className="wp-if-corner ic-tl" style={{ backgroundImage: `url(${FLORAL})` }} />
-            <div className="wp-if-corner ic-tr" style={{ backgroundImage: `url(${FLORAL})` }} />
-            <div className="wp-if-corner ic-bl" style={{ backgroundImage: `url(${FLORAL})` }} />
-            <div className="wp-if-corner ic-br" style={{ backgroundImage: `url(${FLORAL})` }} />
             <div className="wp-intro-veil" />
           </div>
           <WeddyLogo className="wp-intro-mark" />
@@ -1685,11 +1754,6 @@ const CSS = `
 .wp-intro::after{content:""; position:absolute; inset:14px; border:1.6px solid rgba(198,155,94,.72); border-radius:16px; z-index:3; pointer-events:none;}
 .wp-intro-art{position:absolute; inset:14px; z-index:0; overflow:hidden; border-radius:16px;}
 .wp-if-base{position:absolute; inset:0; background-size:cover; background-position:center; background-repeat:no-repeat;}
-.wp-if-corner{position:absolute; width:60%; height:55%; background-repeat:no-repeat; background-size:cover; background-position:center;}
-.ic-tl{top:0; left:0; background-position:left top;}
-.ic-tr{top:0; right:0; background-position:right top;}
-.ic-bl{bottom:0; left:0; background-position:left bottom;}
-.ic-br{bottom:0; right:0; background-position:right bottom;}
 .wp-intro-veil{position:absolute; inset:0; z-index:1; background:radial-gradient(125% 95% at 50% 42%, rgba(251,246,242,.82) 22%, rgba(251,246,242,.5) 52%, rgba(251,246,242,.1) 100%), radial-gradient(120% 80% at 18% 4%, rgba(247,223,226,.4) 0%, rgba(247,223,226,0) 55%);}
 .wp-intro-mark{position:relative; z-index:2; width:150px; height:auto; filter:drop-shadow(0 4px 16px rgba(58,46,44,.26)); animation:wpIntroMark 3s ease forwards;}
 @keyframes wpIntroMark{0%{opacity:0; transform:scale(.92);} 14%{opacity:1; transform:scale(1);} 44%{opacity:1; transform:scale(1);} 60%{opacity:0; transform:scale(1.05);} 100%{opacity:0;}}
@@ -1959,19 +2023,41 @@ const CSS = `
 .wp-clear-btn:hover{color:var(--rose); border-color:var(--rose);}
 .wp-clear-confirm{display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:center; padding:10px 14px; border:1px solid var(--line); border-radius:12px; background:var(--paper2); font-size:14px; color:var(--ink);}
 .wp-btn-danger{padding:8px 16px; border:none; border-radius:10px; background:var(--rose); color:#fff; font-weight:600; font-size:14px; cursor:pointer;}
-.wp-ob-back{position:fixed; inset:0; z-index:900; background:rgba(58,46,44,.42); backdrop-filter:blur(3px); display:flex; align-items:center; justify-content:center; padding:20px;}
-.wp-ob{width:100%; max-width:400px; background:var(--paper); border:1px solid var(--line); border-radius:22px; box-shadow:0 24px 60px rgba(58,46,44,.28); padding:26px 24px 22px; text-align:center;}
-.wp-ob-rings{display:block; margin:0 auto 6px; width:110px; height:auto;}
-.wp-ob-title{margin:0 0 4px; font-family:'Fraunces',serif; font-weight:500; font-size:26px; color:var(--ink);}
-.wp-ob-sub{margin:0 0 18px; font-size:14px; line-height:1.5; color:var(--muted);}
-.wp-ob-lab{display:block; text-align:left; font-size:12px; font-weight:600; letter-spacing:.02em; color:var(--muted); margin:12px 2px 5px; text-transform:uppercase;}
-.wp-ob-input{width:100%; box-sizing:border-box; padding:11px 13px; border:1px solid var(--line); border-radius:12px; font-size:15px; background:#fff; color:var(--ink);}
-.wp-ob-names{display:flex; align-items:center; gap:8px;}
+.wp-ob{position:fixed; inset:0; z-index:900; background:radial-gradient(125% 90% at 50% 26%, #ffffff 0%, var(--paper) 52%, #f1e2dc 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px 24px; text-align:center;}
+.wp-ob-skip2{position:absolute; top:16px; right:18px; border:none; background:transparent; color:var(--muted); font-size:14px; font-weight:600; cursor:pointer; padding:6px 8px;}
+.wp-ob-hero{display:flex; flex-direction:column; align-items:center;}
+.wp-ob-heart{width:150px; height:auto; margin-bottom:10px;}
+.wp-heart-path{stroke-dasharray:560; stroke-dashoffset:560; animation:wpHeartDraw 1.7s ease forwards;}
+.wp-heart-fill{opacity:0; transform-box:fill-box; transform-origin:center; animation:wpHeartFill 0.7s ease 1.45s forwards;}
+@keyframes wpHeartDraw{to{stroke-dashoffset:0;}}
+@keyframes wpHeartFill{0%{opacity:0; transform:scale(0.9);} 60%{transform:scale(1.06);} 100%{opacity:1; transform:scale(1);}}
+.wp-ob-fadein{opacity:0; animation:wpObUp 0.6s ease 1.65s forwards;}
+.wp-ob-fadein:nth-of-type(2){animation-delay:1.8s;}
+.wp-ob-herogo{animation-delay:1.95s;}
+@keyframes wpObUp{from{opacity:0; transform:translateY(12px);} to{opacity:1; transform:translateY(0);}}
+.wp-ob-title{margin:0 0 6px; font-family:'Fraunces',serif; font-weight:500; font-size:30px; color:var(--ink);}
+.wp-ob-sub{margin:0 0 22px; font-size:15px; line-height:1.55; color:var(--muted); max-width:320px;}
+.wp-ob-stepwrap{width:100%; max-width:400px; display:flex; flex-direction:column;}
+.wp-ob-dots{display:flex; gap:8px; justify-content:center; margin-bottom:26px;}
+.wp-ob-dot{width:26px; height:4px; border-radius:3px; background:var(--line); transition:background .3s;}
+.wp-ob-dot.is-on{background:var(--rose);}
+.wp-ob-step{animation:wpObSlide 0.42s cubic-bezier(0.22,0.8,0.3,1);}
+@keyframes wpObSlide{from{opacity:0; transform:translateX(26px);} to{opacity:1; transform:translateX(0);}}
+.wp-ob-count{display:block; font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--rose); margin-bottom:8px;}
+.wp-ob-q{margin:0 0 20px; font-family:'Fraunces',serif; font-weight:500; font-size:26px; line-height:1.15; color:var(--ink);}
+.wp-ob-hint{margin:-12px 0 16px; font-size:13px; color:var(--muted);}
+.wp-ob-input{width:100%; box-sizing:border-box; padding:13px 15px; border:1px solid var(--line); border-radius:14px; font-size:16px; background:#fff; color:var(--ink); text-align:center;}
+.wp-ob-input-lg{font-size:18px; padding:15px;}
+.wp-ob-names{display:flex; align-items:center; gap:10px;}
 .wp-ob-names .wp-ob-input{flex:1; min-width:0;}
-.wp-ob-amp{font-family:'Fraunces',serif; font-style:italic; font-size:20px; color:var(--rose);}
-.wp-ob-actions{display:flex; gap:10px; margin-top:20px;}
-.wp-ob-skip{flex:1; padding:12px; border:1px solid var(--line); background:transparent; border-radius:12px; font-weight:600; font-size:14px; color:var(--muted); cursor:pointer;}
-.wp-ob-go{flex:2; padding:12px; border:none; border-radius:12px; background:var(--ink); color:var(--paper); font-weight:600; font-size:15px; cursor:pointer;}
+.wp-ob-amp{font-family:'Fraunces',serif; font-style:italic; font-size:24px; color:var(--rose);}
+.wp-ob-budget{display:flex; align-items:center; gap:10px;}
+.wp-ob-eur{font-family:'Fraunces',serif; font-size:26px; color:var(--muted);}
+.wp-ob-budget .wp-ob-input{flex:1; text-align:left;}
+.wp-ob-nav{display:flex; gap:10px; margin-top:28px;}
+.wp-ob-back{flex:1; padding:14px; border:1px solid var(--line); background:transparent; border-radius:14px; font-weight:600; font-size:15px; color:var(--muted); cursor:pointer;}
+.wp-ob-go{flex:2; padding:14px; border:none; border-radius:14px; background:var(--ink); color:var(--paper); font-weight:600; font-size:16px; cursor:pointer;}
+.wp-ob-herogo{margin-top:4px; padding:14px 40px;}
 
 /* schema */
 .wp-sched{display:flex; flex-direction:column;}
