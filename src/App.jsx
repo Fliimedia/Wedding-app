@@ -617,6 +617,18 @@ function WeddyLogo({ className }) {
   );
 }
 
+function CoupleCrest({ className }) {
+  return (
+    <svg className={className} viewBox="0 0 160 84" role="img" aria-label="Nick & Sarah" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <line x1="30" y1="42" x2="52" y2="42" stroke="#b08d57" strokeWidth="1.3" />
+      <circle cx="26" cy="42" r="1.8" fill="#b08d57" />
+      <line x1="108" y1="42" x2="130" y2="42" stroke="#b08d57" strokeWidth="1.3" />
+      <circle cx="134" cy="42" r="1.8" fill="#b08d57" />
+      <text x="80" y="58" textAnchor="middle" fontFamily="'Fraunces', serif" fontSize="44" fontWeight="500" fill="#3a2e2c">N<tspan fontStyle="italic" fontWeight="400" fill="#b5546a"> &amp; </tspan>S</text>
+    </svg>
+  );
+}
+
 export default function App() {
   const { data, setData, loaded } = useStore();
   const [tab, setTab] = useState("taken");
@@ -734,7 +746,7 @@ function Hero({ daysToGo, musicOn, onToggleMusic, tab, setTab }) {
         )}
       </nav>
       <div className="wp-hero-body">
-        <img className="wp-logo" src={LOGO_CREST} alt="N & S Vermeer" />
+        <CoupleCrest className="wp-logo" />
         <h1 className="wp-names">Nick <span>&amp;</span> Sarah</h1>
         <div className="wp-countdown">
           <span className="wp-count-num">{daysToGo > 0 ? daysToGo : daysToGo === 0 ? "Vandaag" : "0"}</span>
