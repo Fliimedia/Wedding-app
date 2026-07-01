@@ -600,12 +600,87 @@ function RingsLogo({ className }) {
   );
 }
 
+function abToB64(buf) {
+  const bytes = new Uint8Array(buf);
+  let bin = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+  }
+  return btoa(bin);
+}
+
+async function extractFile(file) {
+  const name = (file.name || "").toLowerCase();
+  const buf = await file.arrayBuffer();
+  if (name.endsWith(".pdf")) return { pdf: abToB64(buf) };
+  if (name.endsWith(".xlsx") || name.endsWith(".xls") || name.endsWith(".csv")) {
+    const XLSX = await import("xlsx");
+    const wb = XLSX.read(buf, { type: "array" });
+    let text = "";
+    wb.SheetNames.forEach((n) => { text += "# " + n + "\n" + XLSX.utils.sheet_to_csv(wb.Sheets[n]) + "\n\n"; });
+    return { text };
+  }
+  if (name.endsWith(".docx")) {
+    const mammoth = await import("mammoth/mammoth.browser");
+    const r = await mammoth.extractRawText({ arrayBuffer: buf });
+    return { text: r.value };
+  }
+  return { text: new TextDecoder().decode(buf) };
+}
+
+const OB_QUESTIONS = [
+  { q: "Aantal gasten", options: ["< 50", "50-100", "100-150", "150+"] },
+  { q: "Locatie", options: ["Binnenland", "Buitenland"] },
+  { q: "Soort locatie", options: ["Landhuis", "Kasteel", "Strand", "Restaurant", "Tuin"] },
+  { q: "Ceremonie", options: ["Kerkelijk", "Gemeentehuis", "Vrije ceremonie"] },
+  { q: "Seizoen", options: ["Lente", "Zomer", "Herfst", "Winter"] },
+  { q: "Stijl", options: ["Klassiek", "Modern", "Boho", "Rustiek", "Glamour"] },
+  { q: "Tijdstip", options: ["Overdag", "Middag + avond", "Avond"] },
+  { q: "Diner", options: ["Zittend diner", "Buffet", "Walking dinner", "BBQ"] },
+  { q: "Drank", options: ["Open bar", "Beperkt", "Zelf meenemen"] },
+  { q: "Muziek", options: ["DJ", "Live band", "Beide", "Akoestisch"] },
+  { q: "Beeld", options: ["Fotograaf", "Foto + video", "Minimaal"] },
+  { q: "Bloemen & styling", options: ["Uitbundig", "Subtiel", "Minimaal"] },
+  { q: "Kleding", options: ["Couture", "Confectie", "Duurzaam"] },
+  { q: "Overnachting gasten", options: ["Geregeld", "Zelf regelen", "Niet nodig"] },
+  { q: "Vervoer", options: ["Trouwauto", "Bus voor gasten", "Geen speciaal"] },
+];
+
+const OB_TIERS = [
+  { id: "budget", label: "Budget", desc: "Slim en betaalbaar" },
+  { id: "standaard", label: "Standaard", desc: "Mooi in balans" },
+  { id: "luxe", label: "Luxe", desc: "Niets te veel gevraagd" },
+];
+
+const ICON_PENCIL = (
+  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20h4L18.5 9.5a2.1 2.1 0 0 0-3-3L5 17v3z" /><path d="M13.5 6.5l3 3" /></svg>
+);
+const ICON_UPLOAD = (
+  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 15V4" /><path d="M8 8l4-4 4 4" /><path d="M4 17v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2" /></svg>
+);
+const ICON_SPARK = (
+  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l1.8 4.2L18 9l-4.2 1.8L12 15l-1.8-4.2L6 9l4.2-1.8z" /><path d="M18 14l.9 2.1L21 17l-2.1.9L18 20l-.9-2.1L15 17l2.1-.9z" /></svg>
+);
+
 function Onboarding({ data, setData }) {
-  const [step, setStep] = useState(0);
+  const [screen, setScreen] = useState("hero");
+  const [step, setStep] = useState(1);
   const [a, setA] = useState(data.coupleA || "");
   const [b, setB] = useState(data.coupleB || "");
   const [date, setDate] = useState(data.weddingDate || "");
   const [budget, setBudget] = useState(data.budget ? String(data.budget) : "");
+  const [tier, setTier] = useState("standaard");
+  const [ans, setAns] = useState({});
+  const [wish1, setWish1] = useState("");
+  const [wish2, setWish2] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const [plan, setPlan] = useState(null);
+  const [openSec, setOpenSec] = useState("schedule");
+
+  const HEART = "M100 165 C 32 116 22 74 54 52 C 79 36 100 53 100 74 C 100 53 121 36 146 52 C 178 74 168 116 100 165 Z";
+
   const finish = (skip) =>
     setData((d) => ({
       ...d,
@@ -617,21 +692,177 @@ function Onboarding({ data, setData }) {
         budget: budget ? Math.round(parseFloat(budget)) || d.budget : d.budget,
       }),
     }));
-  const HEART = "M100 165 C 32 116 22 74 54 52 C 79 36 100 53 100 74 C 100 53 121 36 146 52 C 178 74 168 116 100 165 Z";
+
+  const runImport = async (file) => {
+    setErr(""); setBusy(true);
+    try {
+      const extracted = await extractFile(file);
+      const res = await fetch("/api/plan", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ mode: "import", nameA: a, nameB: b, weddingDate: date, ...extracted }) });
+      const j = await res.json();
+      if (!res.ok || j.error) throw new Error(j.error || "Er ging iets mis.");
+      const p = j.plan || {}; p._gen = false;
+      setPlan(p); setOpenSec("schedule"); setScreen("plan");
+    } catch (e) { setErr(String(e && e.message ? e.message : e)); }
+    finally { setBusy(false); }
+  };
+
+  const runGenerate = async () => {
+    setErr(""); setBusy(true);
+    try {
+      const answers = OB_QUESTIONS.map((q, i) => ({ q: q.q, a: ans[i] || q.options[0] }));
+      const res = await fetch("/api/plan", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ mode: "generate", tier, nameA: a, nameB: b, weddingDate: date, answers, wish1, wish2 }) });
+      const j = await res.json();
+      if (!res.ok || j.error) throw new Error(j.error || "Er ging iets mis.");
+      const p = j.plan || {}; p._gen = true;
+      setPlan(p); setOpenSec("schedule"); setScreen("plan");
+    } catch (e) { setErr(String(e && e.message ? e.message : e)); }
+    finally { setBusy(false); }
+  };
+
+  const applyPlan = () => {
+    setData((d) => {
+      const nA = ((plan.coupleA || a || d.coupleA) || "").trim();
+      const nB = ((plan.coupleB || b || d.coupleB) || "").trim();
+      const wd = plan.weddingDate || date || d.weddingDate || "";
+      const now = Date.now();
+      return {
+        ...d,
+        onboarded: true,
+        coupleA: nA,
+        coupleB: nB,
+        weddingDate: wd,
+        budget: plan.budget || (budget ? Math.round(parseFloat(budget)) : 0) || d.budget,
+        customTasks: [...d.customTasks, ...((plan.tasks) || []).map((t, i) => ({ id: "ai" + now + "_" + i, name: t.name || "Taak", category: t.category || "Planning & logistiek", owner: t.owner || "Samen", deadline: t.deadline || wd || "", details: t.details || "" }))],
+        posten: [...d.posten, ...((plan.posten) || []).map((p, i) => ({ id: "aip" + now + "_" + i, name: p.name || "Post", amount: Math.round(p.amount) || 0 }))],
+        customGuests: [...d.customGuests, ...((plan.guests) || []).map((g, i) => ({ id: "aig" + now + "_" + i, name: g.name || "Gast", category: g.category || "Familie & vrienden", side: g.side || nA || "Partner 1", inv: g.inv !== false, pres: !!g.pres }))],
+        schedule: (plan.schedule && plan.schedule.length) ? [{ phase: "Dagschema", rows: plan.schedule.map((sc, i) => ({ id: "ais" + i, time: sc.time || "", what: sc.title || sc.what || "", travel: null, roles: ["paar"] })) }] : d.schedule,
+      };
+    });
+  };
+
+  const eur = (n) => "\u20ac " + Math.round(n || 0).toLocaleString("nl-NL");
+
+  const renderPlan = () => {
+    const tasks = plan.tasks || [];
+    const byCat = {};
+    tasks.forEach((t) => { const k = t.category || "Overig"; (byCat[k] = byCat[k] || []).push(t); });
+    const posten = plan.posten || [];
+    const totalBudget = plan.budget || posten.reduce((x, p) => x + (p.amount || 0), 0);
+    const sched = plan.schedule || [];
+    const guests = plan.guests || [];
+    const breakdown = plan.guestBreakdown || [];
+    const fold = (key, title, meta, body) => (
+      <div className="wp-fold">
+        <button className="wp-fold-head" onClick={() => setOpenSec(openSec === key ? "" : key)}>
+          <span className="wp-fold-title">{title}</span>
+          {meta ? <span className="wp-fold-meta">{meta}</span> : null}
+          <span className={"wp-fold-chev" + (openSec === key ? " is-open" : "")}>&rsaquo;</span>
+        </button>
+        {openSec === key && <div className="wp-fold-body">{body}</div>}
+      </div>
+    );
+    return (
+      <div className="wp-ob-stepwrap wp-ob-plan wp-ob-step">
+        <span className="wp-ob-count">Jullie trouwplan</span>
+        <h2 className="wp-ob-q">{(plan.coupleA || a) || "Jullie"}{(plan.coupleB || b) ? " & " + (plan.coupleB || b) : ""}</h2>
+        {plan.description ? <p className="wp-ob-desc">{plan.description}</p> : null}
+
+        {fold("schedule", "Dagschema", sched.length ? sched.length + " onderdelen" : "", (
+          sched.length ? (
+            <div className="wp-pl-sched">
+              {sched.map((sc, i) => (
+                <div className="wp-pl-srow" key={i}><span className="wp-pl-time">{sc.time}</span><span className="wp-pl-what">{sc.title || sc.what}</span></div>
+              ))}
+            </div>
+          ) : <p className="wp-pl-empty">Geen dagschema.</p>
+        ))}
+
+        {fold("todo", "To do's", tasks.length ? tasks.length + " taken" : "", (
+          Object.keys(byCat).length ? (
+            <div className="wp-pl-todo">
+              {Object.keys(byCat).map((cat) => (
+                <div className="wp-pl-catgroup" key={cat}>
+                  <div className="wp-pl-cat" style={{ color: catColor(cat) }}>{cat}</div>
+                  {byCat[cat].map((t, i) => (
+                    <div className="wp-pl-line" key={i}><span>{t.name}</span><span className="wp-pl-owner">{t.owner}</span></div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          ) : <p className="wp-pl-empty">Geen taken.</p>
+        ))}
+
+        {fold("budget", "Budget", totalBudget ? eur(totalBudget) : "", (
+          posten.length ? (
+            <div className="wp-pl-budget">
+              {posten.map((p, i) => (
+                <div className="wp-pl-line" key={i}><span>{p.name}</span><span>{eur(p.amount)}</span></div>
+              ))}
+              <div className="wp-pl-line wp-pl-total"><span>Totaal</span><span>{eur(totalBudget)}</span></div>
+            </div>
+          ) : <p className="wp-pl-empty">Geen budgetposten.</p>
+        ))}
+
+        {fold("guests", "Gasten", (guests.length || breakdown.reduce((x, g) => x + (g.count || 0), 0)) ? "" : "", (
+          guests.length ? (
+            <div className="wp-pl-guests">
+              {guests.map((g, i) => (
+                <div className="wp-pl-line" key={i}><span>{g.name}</span><span className="wp-pl-owner">{g.side}</span></div>
+              ))}
+            </div>
+          ) : breakdown.length ? (
+            <div className="wp-pl-guests">
+              {breakdown.map((g, i) => (
+                <div className="wp-pl-line" key={i}><span>{g.group}</span><span>{g.count}</span></div>
+              ))}
+            </div>
+          ) : <p className="wp-pl-empty">Nog geen gasten. Voeg ze zelf toe.</p>
+        ))}
+
+        <div className="wp-ob-nav">
+          <button className="wp-ob-back" onClick={() => setScreen(plan._gen ? "generate" : "upload")}>Opnieuw</button>
+          <button className="wp-ob-go" onClick={applyPlan}>Gebruik dit plan</button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="wp-ob">
       <button className="wp-ob-skip2" onClick={() => finish(true)}>Overslaan</button>
-      {step === 0 ? (
+
+      {screen === "hero" && (
         <div className="wp-ob-hero">
           <svg className="wp-ob-heart" viewBox="0 0 200 180" aria-hidden="true">
             <path className="wp-heart-fill" d={HEART} fill="#c1913f" />
             <path className="wp-heart-path" d={HEART} fill="none" stroke="#c1913f" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           <h2 className="wp-ob-title wp-ob-fadein">Welkom bij Weddy</h2>
-          <p className="wp-ob-sub wp-ob-fadein">Laten we jullie trouwdag plannen. Een paar vragen om te starten.</p>
-          <button className="wp-ob-go wp-ob-fadein wp-ob-herogo" onClick={() => setStep(1)}>Beginnen</button>
+          <p className="wp-ob-sub wp-ob-fadein">Laten we jullie trouwdag plannen.</p>
+          <button className="wp-ob-go wp-ob-fadein wp-ob-herogo" onClick={() => setScreen("choose")}>Beginnen</button>
         </div>
-      ) : (
+      )}
+
+      {screen === "choose" && (
+        <div className="wp-ob-stepwrap wp-ob-step">
+          <h2 className="wp-ob-q">Hoe wil je beginnen?</h2>
+          <p className="wp-ob-hint">Kies hoe je jullie planning opzet.</p>
+          <button className="wp-ob-card" onClick={() => { setScreen("manual"); setStep(1); }}>
+            <span className="wp-ob-cardic">{ICON_PENCIL}</span>
+            <span className="wp-ob-cardtx"><b>Zelf invullen</b><i>Namen, datum en budget</i></span>
+          </button>
+          <button className="wp-ob-card" onClick={() => { setErr(""); setScreen("upload"); }}>
+            <span className="wp-ob-cardic">{ICON_UPLOAD}</span>
+            <span className="wp-ob-cardtx"><b>Trouwplan uploaden</b><i>Excel of Word, AI zet het om</i></span>
+          </button>
+          <button className="wp-ob-card wp-ob-card-ai" onClick={() => { setErr(""); setScreen("generate"); }}>
+            <span className="wp-ob-cardic">{ICON_SPARK}</span>
+            <span className="wp-ob-cardtx"><b>Laat AI een plan maken</b><i>Beantwoord een paar vragen</i></span>
+          </button>
+        </div>
+      )}
+
+      {screen === "manual" && (
         <div className="wp-ob-stepwrap">
           <div className="wp-ob-dots">
             {[1, 2, 3].map((n) => <span key={n} className={"wp-ob-dot" + (n <= step ? " is-on" : "")} />)}
@@ -668,15 +899,75 @@ function Onboarding({ data, setData }) {
             )}
           </div>
           <div className="wp-ob-nav">
-            <button className="wp-ob-back" onClick={() => setStep((x) => x - 1)}>Terug</button>
+            <button className="wp-ob-back" onClick={() => (step > 1 ? setStep(step - 1) : setScreen("choose"))}>Terug</button>
             {step < 3 ? (
-              <button className="wp-ob-go" onClick={() => setStep((x) => x + 1)}>Volgende</button>
+              <button className="wp-ob-go" onClick={() => setStep(step + 1)}>Volgende</button>
             ) : (
               <button className="wp-ob-go" onClick={() => finish(false)}>Aan de slag</button>
             )}
           </div>
         </div>
       )}
+
+      {screen === "upload" && (
+        <div className="wp-ob-stepwrap wp-ob-step">
+          <span className="wp-ob-count">Trouwplan importeren</span>
+          <h2 className="wp-ob-q">Upload jullie plan</h2>
+          <p className="wp-ob-hint">Excel, Word, PDF of CSV. Weddy leest het en maakt er taken, budget en gasten van.</p>
+          {busy ? (
+            <div className="wp-ob-busy"><span className="wp-spin" />AI leest je document...</div>
+          ) : (
+            <label className="wp-ob-go wp-ob-file">
+              Kies bestand
+              <input type="file" accept=".xlsx,.xls,.csv,.txt,.docx,.pdf" style={{ display: "none" }} onChange={(e) => { const fl = e.target.files && e.target.files[0]; if (fl) runImport(fl); }} />
+            </label>
+          )}
+          {err ? <p className="wp-ob-err">{err}</p> : null}
+          <button className="wp-ob-back wp-ob-back-solo" onClick={() => { setErr(""); setScreen("choose"); }}>Terug</button>
+        </div>
+      )}
+
+      {screen === "generate" && (
+        <div className="wp-ob-stepwrap wp-ob-gen wp-ob-step">
+          <span className="wp-ob-count">AI trouwplan</span>
+          <h2 className="wp-ob-q">Vertel over jullie dag</h2>
+          <div className="wp-ob-names">
+            <input className="wp-ob-input" placeholder="Naam 1" value={a} onChange={(e) => setA(e.target.value)} />
+            <span className="wp-ob-amp">&amp;</span>
+            <input className="wp-ob-input" placeholder="Naam 2" value={b} onChange={(e) => setB(e.target.value)} />
+          </div>
+          <input className="wp-ob-input" type="date" value={date} onChange={(e) => setDate(e.target.value)} style={{ marginTop: "10px" }} />
+          <div className="wp-ob-tiers">
+            {OB_TIERS.map((t) => (
+              <button key={t.id} className={"wp-ob-tier" + (tier === t.id ? " is-on" : "")} onClick={() => setTier(t.id)}>
+                <b>{t.label}</b><i>{t.desc}</i>
+              </button>
+            ))}
+          </div>
+          <div className="wp-ob-qs">
+            {OB_QUESTIONS.map((q, i) => (
+              <div className="wp-ob-qrow" key={i}>
+                <span className="wp-ob-qlab">{q.q}</span>
+                <div className="wp-ob-opts">
+                  {q.options.map((o) => (
+                    <button key={o} className={"wp-ob-opt" + ((ans[i] || q.options[0]) === o ? " is-on" : "")} onClick={() => setAns((p) => ({ ...p, [i]: o }))}>{o}</button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <textarea className="wp-ob-ta" placeholder="Bijzondere wens 1 (bv. duurzaam, geen speeches)" value={wish1} onChange={(e) => setWish1(e.target.value)} />
+          <textarea className="wp-ob-ta" placeholder="Bijzondere wens 2" value={wish2} onChange={(e) => setWish2(e.target.value)} />
+          {err ? <p className="wp-ob-err">{err}</p> : null}
+          <div className="wp-ob-nav">
+            <button className="wp-ob-back" onClick={() => { setErr(""); setScreen("choose"); }}>Terug</button>
+            <button className="wp-ob-go" disabled={busy} onClick={runGenerate}>{busy ? "Bezig..." : "Genereer plan"}</button>
+          </div>
+          {busy ? <div className="wp-ob-busy"><span className="wp-spin" />AI stelt jullie plan samen...</div> : null}
+        </div>
+      )}
+
+      {screen === "plan" && plan && renderPlan()}
     </div>
   );
 }
@@ -2032,9 +2323,9 @@ const CSS = `
 .wp-clear-btn:hover{color:var(--rose); border-color:var(--rose);}
 .wp-clear-confirm{display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:center; padding:10px 14px; border:1px solid var(--line); border-radius:12px; background:var(--paper2); font-size:14px; color:var(--ink);}
 .wp-btn-danger{padding:8px 16px; border:none; border-radius:10px; background:var(--rose); color:#fff; font-weight:600; font-size:14px; cursor:pointer;}
-.wp-ob{position:fixed; inset:0; z-index:900; background:radial-gradient(125% 90% at 50% 26%, #ffffff 0%, var(--paper) 52%, #f1e2dc 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:28px 24px; text-align:center;}
+.wp-ob{position:fixed; inset:0; z-index:900; background:radial-gradient(125% 90% at 50% 26%, #ffffff 0%, var(--paper) 52%, #f1e2dc 100%); display:flex; flex-direction:column; align-items:center; justify-content:flex-start; overflow-y:auto; padding:60px 22px 36px; text-align:center;}
 .wp-ob-skip2{position:absolute; top:16px; right:18px; border:none; background:transparent; color:var(--muted); font-size:14px; font-weight:600; cursor:pointer; padding:6px 8px;}
-.wp-ob-hero{display:flex; flex-direction:column; align-items:center;}
+.wp-ob-hero{display:flex; flex-direction:column; align-items:center; margin:auto 0;}
 .wp-ob-heart{width:150px; height:auto; margin-bottom:10px;}
 .wp-heart-path{stroke-dasharray:560; stroke-dashoffset:560; animation:wpHeartDraw 1.7s ease forwards;}
 .wp-heart-fill{opacity:0; transform-box:fill-box; transform-origin:center; animation:wpHeartFill 0.7s ease 1.45s forwards;}
@@ -2046,7 +2337,7 @@ const CSS = `
 @keyframes wpObUp{from{opacity:0; transform:translateY(12px);} to{opacity:1; transform:translateY(0);}}
 .wp-ob-title{margin:0 0 6px; font-family:'Fraunces',serif; font-weight:500; font-size:30px; color:var(--ink);}
 .wp-ob-sub{margin:0 0 22px; font-size:15px; line-height:1.55; color:var(--muted); max-width:320px;}
-.wp-ob-stepwrap{width:100%; max-width:400px; display:flex; flex-direction:column;}
+.wp-ob-stepwrap{width:100%; max-width:440px; display:flex; flex-direction:column; margin:auto 0;}
 .wp-ob-dots{display:flex; gap:8px; justify-content:center; margin-bottom:26px;}
 .wp-ob-dot{width:26px; height:4px; border-radius:3px; background:var(--line); transition:background .3s;}
 .wp-ob-dot.is-on{background:var(--rose);}
@@ -2067,6 +2358,51 @@ const CSS = `
 .wp-ob-back{flex:1; padding:14px; border:1px solid var(--line); background:transparent; border-radius:14px; font-weight:600; font-size:15px; color:var(--muted); cursor:pointer;}
 .wp-ob-go{flex:2; padding:14px; border:none; border-radius:14px; background:var(--ink); color:var(--paper); font-weight:600; font-size:16px; cursor:pointer;}
 .wp-ob-herogo{margin-top:4px; padding:14px 40px;}
+.wp-ob-card{display:flex; align-items:center; gap:14px; width:100%; text-align:left; padding:15px 16px; margin-top:12px; border:1px solid var(--line); border-radius:16px; background:#fff; cursor:pointer; transition:border-color .2s, transform .1s;}
+.wp-ob-card:active{transform:scale(0.99);}
+.wp-ob-card:hover{border-color:var(--brass);}
+.wp-ob-cardic{flex:none; width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:var(--paper); color:var(--brass);}
+.wp-ob-cardtx{display:flex; flex-direction:column;}
+.wp-ob-cardtx b{font-family:'Fraunces',serif; font-weight:500; font-size:17px; color:var(--ink);}
+.wp-ob-cardtx i{font-style:normal; font-size:13px; color:var(--muted); margin-top:2px;}
+.wp-ob-card-ai{background:linear-gradient(120deg, #fff 0%, #fbf3e5 100%); border-color:#e7cf9c;}
+.wp-ob-card-ai .wp-ob-cardic{background:#f2e2c1; color:#a97f33;}
+.wp-ob-file{display:inline-flex; align-items:center; justify-content:center; margin-top:20px; cursor:pointer;}
+.wp-ob-busy{display:flex; align-items:center; justify-content:center; gap:10px; margin-top:20px; font-size:14px; color:var(--muted);}
+.wp-spin{width:18px; height:18px; border-radius:50%; border:2.5px solid var(--line); border-top-color:var(--brass); animation:wpSpin .8s linear infinite; display:inline-block;}
+@keyframes wpSpin{to{transform:rotate(360deg);}}
+.wp-ob-err{margin-top:14px; font-size:13.5px; color:#b23b3b; line-height:1.4;}
+.wp-ob-back-solo{margin-top:22px; align-self:center; padding:11px 26px;}
+.wp-ob-tiers{display:flex; gap:8px; margin-top:16px;}
+.wp-ob-tier{flex:1; display:flex; flex-direction:column; gap:2px; padding:12px 8px; border:1px solid var(--line); border-radius:13px; background:#fff; cursor:pointer;}
+.wp-ob-tier b{font-family:'Fraunces',serif; font-weight:500; font-size:15px; color:var(--ink);}
+.wp-ob-tier i{font-style:normal; font-size:11px; color:var(--muted); line-height:1.2;}
+.wp-ob-tier.is-on{border-color:var(--brass); background:#fbf3e5;}
+.wp-ob-qs{display:flex; flex-direction:column; gap:14px; margin-top:20px; text-align:left;}
+.wp-ob-qrow{display:flex; flex-direction:column; gap:7px;}
+.wp-ob-qlab{font-size:13px; font-weight:700; color:var(--ink); letter-spacing:.01em;}
+.wp-ob-opts{display:flex; flex-wrap:wrap; gap:6px;}
+.wp-ob-opt{padding:7px 12px; border:1px solid var(--line); border-radius:999px; background:#fff; font-size:12.5px; color:var(--muted); cursor:pointer;}
+.wp-ob-opt.is-on{border-color:var(--brass); background:var(--ink); color:var(--paper);}
+.wp-ob-ta{width:100%; box-sizing:border-box; margin-top:12px; padding:12px 14px; border:1px solid var(--line); border-radius:14px; font-size:14px; font-family:inherit; background:#fff; color:var(--ink); resize:vertical; min-height:52px;}
+.wp-ob-desc{margin:2px 0 16px; font-size:14.5px; line-height:1.55; color:var(--muted);}
+.wp-fold{border:1px solid var(--line); border-radius:14px; margin-top:10px; overflow:hidden; background:#fff; text-align:left;}
+.wp-fold-head{display:flex; align-items:center; gap:10px; width:100%; padding:14px 16px; border:none; background:transparent; cursor:pointer;}
+.wp-fold-title{flex:1; text-align:left; font-family:'Fraunces',serif; font-weight:500; font-size:16px; color:var(--ink);}
+.wp-fold-meta{font-size:12px; color:var(--muted);}
+.wp-fold-chev{font-size:22px; color:var(--muted); transition:transform .2s; line-height:1;}
+.wp-fold-chev.is-open{transform:rotate(90deg);}
+.wp-fold-body{padding:4px 16px 16px; border-top:1px solid var(--line);}
+.wp-pl-sched{display:flex; flex-direction:column; gap:2px;}
+.wp-pl-srow{display:flex; gap:12px; padding:6px 0; border-bottom:1px solid var(--paper);}
+.wp-pl-time{flex:none; width:46px; font-weight:600; font-size:13px; color:var(--brass);}
+.wp-pl-what{font-size:13.5px; color:var(--ink);}
+.wp-pl-catgroup{margin-top:10px;}
+.wp-pl-cat{font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; margin-bottom:4px;}
+.wp-pl-line{display:flex; justify-content:space-between; gap:12px; padding:5px 0; font-size:13.5px; color:var(--ink); border-bottom:1px solid var(--paper);}
+.wp-pl-owner{color:var(--muted); font-size:12.5px;}
+.wp-pl-total{font-weight:700; border-bottom:none; margin-top:4px;}
+.wp-pl-empty{font-size:13px; color:var(--muted); padding:6px 0;}
 
 /* schema */
 .wp-sched{display:flex; flex-direction:column;}
