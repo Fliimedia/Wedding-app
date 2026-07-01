@@ -94,84 +94,17 @@ const RESCHEDULE = {
 };
 
 const TASKS = [
-  ["Bruidsboeket + bruidsmeisjes boeket x3", "Bloemen & styling", "Samen", "2026-06-21", "Langs om 12.30 bij Parnassusweg 3, zo niet dan 22 juni"],
-  ["Corsages", "Bloemen & styling", "Sarah", "2026-06-21", ""],
-  ["Bloemen voor tafels", "Bloemen & styling", "Sarah", "2026-06-21", "Sarah vraagt Petra: afspraken of logistiek, wat moeten we doen?"],
-  ["Sieraden", "Kleding & accessoires", "Sarah", "2026-06-21", "Sarah & Laura"],
-  ["Ringgravure", "Kleding & accessoires", "Nick", "2026-06-21", ""],
-  ["Bruidsmeisjes", "Bridal party", "Sarah", "2026-06-21", "Emma vragen + groepsapp aanmaken met Emma + Sofie + Noor"],
-  ["Playlist voor DJ maken", "Muziek & entertainment", "Samen", "2026-06-21", "Nick deelt Spotify playlist #1 met Sarah"],
-  ["Voorbeeld nummers sturen @ de muziekschool + repetitie plannen", "Muziek & entertainment", "Samen", "2026-06-21", "Nick deelt Spotify playlist #2 met Sarah"],
-  ["Gastenlijst", "Uitnodigingen & gasten", "Samen", "2026-06-21", ""],
-  ["Noodkit samenstellen", "Planning & logistiek", "Nick", "2026-06-21", "Pleisters, paracetamol, naaisetje, make-up, deodorant, veiligheidsspelden. Vragen Petra"],
-  ["Getuigen gemeente doorgeven", "Wettelijk huwelijk", "Sarah", "2026-06-22", "Tom, Laura + Ruben, oma. Doorgeven bij aanvraag gemeente"],
-  ["Voorgenomen huwelijk melden @ Gemeente", "Wettelijk huwelijk", "Sarah", "2026-06-22", ""],
-  ["Reactie + fotograaf bevestigen", "Leveranciers", "Sarah", "2026-06-22", "Via BV"],
-  ["Catering / diner", "Receptie, diner & feest", "Samen", "2026-06-22", "Proefsessie inplannen diner met cateraars + Culina"],
-  ["Kapper (man)", "Leveranciers", "Nick", "2026-06-24", "Afspraak Daan (do 14.00) + bedenken of hij het kan doen"],
-  ["Huwelijksformulier invullen + opsturen Bisdom", "Kerk & ceremonie", "Samen", "2026-06-28", "Gemeentedatum invullen"],
-  ["Videograaf", "Leveranciers", "Samen", "2026-06-28", "Vragen via FC"],
-  ["Visagiste / kapper: proefsessie plannen", "Leveranciers", "Sarah", "2026-06-28", "Nu €650,- en bij extra budget eventueel hoger pakket"],
-  ["Menukaarten", "Receptie, diner & feest", "Sarah", "2026-06-28", "Dieetrestricties benoemen! Vega, vis, noten, melk"],
-  ["Tafelindeling / seating chart", "Receptie, diner & feest", "Sarah", "2026-06-28", ""],
-  ["Naamkaartjes", "Receptie, diner & feest", "Sarah", "2026-06-28", "Pakken bruidsjonkers bestellen + opvragen"],
-  ["Outfit Nick", "Kleding & accessoires", "Nick", "2026-06-28", "Uitzoeken 3-delig pak op maat, max. €500"],
-  ["Manchetknopen / accessoires + bruidsjonker pakken", "Kleding & accessoires", "Nick", "2026-06-28", ""],
-  ["Trouwringen", "Kleding & accessoires", "Nick", "2026-06-28", "Uitkiezen + €1200 budget"],
-  ["Jurken bruidsmeisjes", "Bridal party", "Sarah", "2026-06-28", "60 pp budget + zelf de jurk bestellen + tikkie"],
-  ["Kleding bruidsjonkers", "Bridal party", "Nick", "2026-06-28", "Nick vraagt maten, stemt af met Sarah en bestelt"],
-  ["Eventueel vervoer voor gasten", "Planning & logistiek", "Samen", "2026-06-28", ""],
-  ["Hotel / overnachting", "Planning & logistiek", "Sarah", "2026-06-28", "Spoorhuis overnachting reserveren à max. €150"],
-  ["Honeymoon plannen", "Planning & logistiek", "Samen", "2026-06-28", "Tanzania + boeken na bruiloft"],
-  ["Nagels plannen", "Beauty & voorbereiding", "Sarah", "2026-06-28", "Afspraak voor bruiloftsnagels"],
-  ["Kerk opruimen na dienst", "Planning & logistiek", "Sarah", "2026-06-28", "Nick vraagt Fleur, Iris, Lars, Bram"],
-  ["Receptie: zitten of lopen? @ Kim", "Planning & logistiek", "Nick", "2026-06-28", "Nick zoekt online op"],
-  ["Statafels + zitplekken + lampionnen + parasolletjes + cadeautafel", "Planning & logistiek", "Samen", "2026-06-28", ""],
-  ["Diner-timing afstemmen", "Planning & logistiek", "Samen", "2026-06-28", "Welk eten komt wanneer, aansnijden bruidstaart, koffie mogelijk?"],
-  ["Huwelijkse voorwaarden (notaris)", "Wettelijk huwelijk", "Nick", "2026-07-05", "Contact notaris, afspraak maken"],
-  ["Decoratie voor in de kerk", "Kerk & ceremonie", "Sarah", "2026-07-05", "Offertes vergelijken, keuze: zuilen met bloemen"],
-  ["Design van drukwerk", "Kerk & ceremonie", "Nick", "2026-07-07", "Uitnodigingen + kerkboekje + menukaart + welkomstbord + naamkaart"],
-  ["Cadeautjes voor bridal party", "Bridal party", "Sarah", "2026-07-07", ""],
-  ["Eventuele speeches plannen", "Muziek & entertainment", "Samen", "2026-07-07", "Vragen: Laura, Sanne, Milan, Pa"],
-  ["Tijdschema per leverancier", "Planning & logistiek", "Samen", "2026-07-07", "Zet in 'Leverancier schema'"],
-  ["Contactlijst leveranciers", "Planning & logistiek", "Samen", "2026-07-07", "Zet in 'Leverancier schema'"],
-  ["Entertainment receptie", "Muziek & entertainment", "Nick", "2026-07-07", "Bridal bingo, schilder in Landhuis De Linde"],
-  ["QR-code app voor foto's + houders", "Muziek & entertainment", "Nick", "2026-07-07", "Uitprinten + aanschaf houders"],
-  ["Photo booth", "Muziek & entertainment", "Nick", "2026-07-07", "Offerte opvragen"],
-  ["First dance", "Muziek & entertainment", "Samen", "2026-07-07", "Liedje + liedje moeders & dansstijl + repeteren"],
-  ["Last dance / song", "Muziek & entertainment", "Samen", "2026-07-07", ""],
-  ["Kaarsen", "Kerk & ceremonie", "Sarah", "2026-07-12", ""],
-  ["Kaarshouders", "Kerk & ceremonie", "Sarah", "2026-07-12", ""],
-  ["Ringkussen / doosje voor de ringen", "Kerk & ceremonie", "Sarah", "2026-07-12", ""],
-  ["Ceremoniemeester / wedding coördinator", "Leveranciers", "Sarah", "2026-07-12", ""],
-  ["Gastenboek", "Receptie, diner & feest", "Sarah", "2026-07-12", "Sarah koopt in China"],
-  ["Cadeautafel / enveloppendoos", "Receptie, diner & feest", "Sarah", "2026-07-12", "Sarah zoekt China-pakket uit, met al het drukwerk & meer"],
-  ["Vazen voor bloemen", "Bloemen & styling", "Sarah", "2026-07-12", ""],
-  ["Welkomstbord", "Bloemen & styling", "Sarah", "2026-07-12", "Sarah zoekt China-pakket uit"],
-  ["Mandjes / bloemblaadjes", "Bridal party", "Sarah", "2026-07-12", "Cadeau dames (Sarah) + bruidsjonkers (Nick), max. €100 p.p."],
-  ["Uitnodigingen versturen", "Uitnodigingen & gasten", "Samen", "2026-07-12", ""],
-  ["Spullen cadeautafel bestellen", "Receptie, diner & feest", "Sarah", "2026-07-12", "Enveloppendoos, S&N letterlogo, tafelkleed, etc."],
-  ["Vervoer voor bruidspaar", "Planning & logistiek", "Nick", "2026-07-14", "Huis > Dorpshoek > Vreeland"],
-  ["Bruidsjurk", "Kleding & accessoires", "Sarah", "2026-07-17", "Sarah maakt kostenoverzicht: vlucht, offerte bruidsjurk"],
-  ["Sluier / haaraccessoires", "Kleding & accessoires", "Sarah", "2026-07-17", "Sarah naar Türkiye"],
-  ["Bruidsschoenen", "Kleding & accessoires", "Sarah", "2026-07-17", ""],
-  ["Lingerie", "Kleding & accessoires", "Sarah", "2026-07-17", ""],
-  ["Tweede schoenen voor feest", "Kleding & accessoires", "Sarah", "2026-07-17", ""],
-  ["Bloemenmeisjes kleding", "Bridal party", "Sarah", "2026-07-17", "Faith & Hailey"],
-  ["Prayers / trouwboek / liturgie uitkiezen", "Wettelijk huwelijk", "Samen", "2026-07-25", "Vóór afspraak 1 augustus"],
-  ["Schoenen inlopen", "Beauty & voorbereiding", "Samen", "2026-08-01", ""],
-  ["Kerkruimte voor receptie + koffie/thee", "Planning & logistiek", "Nick", "2026-08-01", "Bijdrage €500"],
-  ["Generale repetitie inplannen", "Planning & logistiek", "Samen", "2026-08-03", "Met bruidsjonkers & team, na gesprek pastoor 1 aug"],
-  ["Besluiten wie Sarah weggeeft", "Wettelijk huwelijk", "Sarah", "2026-08-03", ""],
-  ["Taart voor 60 personen", "Receptie, diner & feest", "Sarah", "2026-08-21", "Logistiek bespreken (21 aug) à 250, moeder Sofie + dinerbon"],
-  ["Draaiboek maken", "Planning & logistiek", "Nick", "2026-08-21", ""],
-  ["DJ", "Leveranciers", "Samen", "2026-09-01", "Bespreken playlist + DJ-set"],
-  ["Jazzband", "Leveranciers", "Sarah", "2026-09-01", "Playlist/set de muziekschool + contrabas"],
-  ["Introductie voor Vibe", "Muziek & entertainment", "Samen", "2026-09-01", "Begeleid feest, wat kan er & waar"],
-  ["Weersverwachting checken", "Laatste week", "Samen", "2026-09-12", ""],
-  ["Betalingen afronden", "Laatste week", "Nick", "2026-09-12", "Check betalingen leveranciers: allen voldaan?"],
-  ["Ringen klaarleggen", "Laatste week", "Nick", "2026-09-12", ""],
-].map((t, i) => ({ id: "t" + i, name: t[0], category: t[1], owner: t[2], deadline: RESCHEDULE[i] || t[3], details: t[4] }));
+  ["Gastenlijst opstellen", "Planning & logistiek", "Samen", "2026-07-05", "Maak een eerste lijst van wie je wilt uitnodigen."],
+  ["Trouwlocatie kiezen", "Kerk & ceremonie", "Samen", "2026-07-12", "Ceremonie- en feestlocatie vergelijken en vastleggen."],
+  ["Uitnodigingen ontwerpen", "Kerk & ceremonie", "Sarah", "2026-07-19", "Stijl, tekst en verzenddatum bepalen."],
+  ["Trouwringen uitzoeken", "Kleding & accessoires", "Nick", "2026-07-26", "Samen ringen passen en bestellen."],
+  ["Fotograaf boeken", "Leveranciers", "Samen", "2026-08-02", "Offertes opvragen en een keuze maken."],
+  ["Bruidsjurk passen", "Kleding & accessoires", "Sarah", "2026-08-09", ""],
+  ["Pak uitzoeken", "Kleding & accessoires", "Nick", "2026-08-09", ""],
+  ["Muziek of DJ regelen", "Muziek & entertainment", "Samen", "2026-08-16", "Denk aan de openingsdans."],
+  ["Menu en catering kiezen", "Receptie, diner & feest", "Samen", "2026-08-23", "Rekening houden met dieetwensen."],
+  ["Dagindeling maken", "Planning & logistiek", "Samen", "2026-09-06", "Tijdschema voor de trouwdag."],
+].map((t, i) => ({ id: "t" + i, name: t[0], category: t[1], owner: t[2], deadline: t[3], details: t[4] }));
 
 const BUDGET = [];
 
@@ -179,52 +112,7 @@ const BUDGET = [];
    inv = "Uitgenodigd" (col D), pres = "Aanwezig" (col E). side = "Van wie". */
 const G = (name, category, inv, pres) => ({ name, category, side: "Nick", inv, pres });
 const GN = (name, pres) => ({ name, category: "Familie & vrienden", side: "Sarah", inv: true, pres });
-const GUESTS = [
-  G("Ouders bruidegom", "Familie", true, true),
-  G("Oma Vermeer", "Familie", true, true),
-  G("Thomas Vermeer", "Familie", true, true),
-  G("Sanne Vermeer", "Familie", true, true),
-  G("Lars de Vries", "Familie", true, true),
-  G("Emma de Vries", "Familie", true, false),
-  G("Daan Bakker", "Vrienden", true, true),
-  G("Iris Bakker", "Vrienden", true, true),
-  G("Tom Jansen", "Vrienden", true, true),
-  G("Sofie Jansen", "Vrienden", true, true),
-  G("Ruben Smit", "Vrienden", true, false),
-  G("Fleur Smit", "Vrienden", true, true),
-  G("Milan Visser", "Vrienden", false, false),
-  G("Noor Visser", "Vrienden", true, true),
-  G("Kim Meijer", "Collega's", true, true),
-  G("Bram Meijer", "Collega's", true, true),
-  G("Julia de Boer", "Collega's", false, false),
-  G("Sem de Boer", "Collega's", true, true),
-  G("Familie Hendriks", "Vrienden van ouders", false, false),
-  G("Familie Willems", "Vrienden van ouders", true, true),
-  G("Lisa Peters", "Overig", false, false),
-  G("Mark Dekker", "Back-up", false, false),
-
-  // Bruid
-  GN("Ouders bruid", true),
-  GN("Oma van de bruid", true),
-  GN("Lotte Groen", true),
-  GN("Pien Groen", true),
-  GN("Sara Mulder", false),
-  GN("Nina Mulder", true),
-  GN("Jasper Kok", true),
-  GN("Roos Kok", true),
-  GN("Anouk Vos", true),
-  GN("Bas Vos", true),
-  GN("Eva Bos", true),
-  GN("Lieke Bos", true),
-  GN("Guus Brouwer", false),
-  GN("Femke Brouwer", true),
-  GN("Sven Kramer", true),
-  GN("Maud Kramer", true),
-  GN("Tessa Willemsen", true),
-  GN("Jesse Willemsen", true),
-  GN("Amber Post", true),
-  GN("Luuk Post", true),
-].map((g, i) => ({ ...g, id: "g" + i }));
+const GUESTS = [];
 
 /* ---------- Day schedule seed (times/descriptions editable in-app) ---------- */
 /* Ceremony: Sint-Martinuskerk (Dorpshoek). Receptie/diner/feest: Landhuis De Linde (Vreeland). */
@@ -417,11 +305,16 @@ const EMPTY = {
   guestPres: {}, // overrides op "aanwezig"
   customGuests: [],
   // Budget v2 - grouped per offerte
-  budget: 25000, // totaal trouwbudget
+  coupleA: "",
+  coupleB: "",
+  weddingDate: "",
+  showDemoTasks: false,
+  onboarded: false,
+  budget: 0, // totaal trouwbudget
   sibizPaid: 0, // werkelijk aanbetaald op Culina (25% aanbetaling op de niet-contante helft)
   sibizOverrides: {}, // edits op de offerteregels
   sibizCustom: [], // toegevoegde regels in de Culina-offerte
-  posten: SEED_POSTEN, // overige kosten (begroot, nog geen offerte)
+  posten: [], // overige kosten (begroot, nog geen offerte)
   offertes: [], // extra offertes die later binnenkomen
   schedule: SCHEDULE_SEED, // bewerkbaar dagschema
   vendors: VENDORS_SEED, // leveranciers met bewerkbare omschrijving
@@ -617,15 +510,99 @@ function WeddyLogo({ className }) {
   );
 }
 
-function CoupleCrest({ className }) {
+function CoupleCrest({ className, nameA, nameB }) {
+  const ia = (nameA || "").trim().charAt(0).toUpperCase();
+  const ib = (nameB || "").trim().charAt(0).toUpperCase();
+  const has = ia || ib;
   return (
-    <svg className={className} viewBox="0 0 160 84" role="img" aria-label="Nick & Sarah" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <line x1="30" y1="42" x2="52" y2="42" stroke="#b08d57" strokeWidth="1.3" />
-      <circle cx="26" cy="42" r="1.8" fill="#b08d57" />
-      <line x1="108" y1="42" x2="130" y2="42" stroke="#b08d57" strokeWidth="1.3" />
-      <circle cx="134" cy="42" r="1.8" fill="#b08d57" />
-      <text x="80" y="58" textAnchor="middle" fontFamily="'Fraunces', serif" fontSize="44" fontWeight="500" fill="#3a2e2c">N<tspan fontStyle="italic" fontWeight="400" fill="#b5546a"> &amp; </tspan>S</text>
+    <svg className={className} viewBox="0 0 160 84" role="img" aria-label="Monogram" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {has ? (
+        <>
+          <line x1="24" y1="42" x2="48" y2="42" stroke="#b08d57" strokeWidth="1.3" />
+          <circle cx="20" cy="42" r="1.8" fill="#b08d57" />
+          <line x1="112" y1="42" x2="136" y2="42" stroke="#b08d57" strokeWidth="1.3" />
+          <circle cx="140" cy="42" r="1.8" fill="#b08d57" />
+          <text x="80" y="58" textAnchor="middle" fontFamily="'Fraunces', serif" fontSize="42" fontWeight="500" fill="#3a2e2c">{ia || "?"}<tspan fontStyle="italic" fontWeight="400" fill="#b5546a"> &amp; </tspan>{ib || "?"}</text>
+        </>
+      ) : (
+        <g stroke="#b08d57" strokeWidth="4" fill="none">
+          <circle cx="70" cy="42" r="16" />
+          <circle cx="92" cy="42" r="16" />
+        </g>
+      )}
     </svg>
+  );
+}
+
+function RingsLogo({ className }) {
+  return (
+    <svg className={className} viewBox="0 0 210 140" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Trouwringen">
+      <defs>
+        <linearGradient id="wpGold" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stopColor="#f6dc95" />
+          <stop offset="0.5" stopColor="#cb9c4f" />
+          <stop offset="1" stopColor="#a67d34" />
+        </linearGradient>
+        <linearGradient id="wpGem" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#ffffff" />
+          <stop offset="1" stopColor="#d6e6f2" />
+        </linearGradient>
+      </defs>
+      <g transform="rotate(-17 78 78)">
+        <ellipse cx="78" cy="78" rx="29" ry="43" stroke="url(#wpGold)" strokeWidth="10" />
+      </g>
+      <ellipse cx="134" cy="84" rx="29" ry="39" stroke="url(#wpGold)" strokeWidth="7" />
+      <g stroke="#cb9c4f" strokeWidth="2">
+        <line x1="134" y1="47" x2="127" y2="37" />
+        <line x1="134" y1="47" x2="141" y2="37" />
+      </g>
+      <polygon points="134,28 150,40 134,60 118,40" fill="url(#wpGem)" stroke="#bcd0e0" strokeWidth="1" />
+      <polyline points="118,40 134,46 150,40" fill="none" stroke="#bcd0e0" strokeWidth="1" />
+      <line x1="134" y1="28" x2="134" y2="46" stroke="#c9dbea" strokeWidth="0.8" />
+      <path d="M112 54 q-7 5 -3 13 q4 5 9 2 q3 -4 -1 -11 z" fill="url(#wpGem)" stroke="#bcd0e0" strokeWidth="0.8" />
+      <path d="M156 54 q7 5 3 13 q-4 5 -9 2 q-3 -4 1 -11 z" fill="url(#wpGem)" stroke="#bcd0e0" strokeWidth="0.8" />
+    </svg>
+  );
+}
+
+function Onboarding({ data, setData }) {
+  const [a, setA] = useState(data.coupleA || "");
+  const [b, setB] = useState(data.coupleB || "");
+  const [date, setDate] = useState(data.weddingDate || "");
+  const [budget, setBudget] = useState(data.budget ? String(data.budget) : "");
+  const finish = (skip) =>
+    setData((d) => ({
+      ...d,
+      onboarded: true,
+      ...(skip ? {} : {
+        coupleA: a.trim(),
+        coupleB: b.trim(),
+        weddingDate: date,
+        budget: budget ? Math.round(parseFloat(budget)) || d.budget : d.budget,
+      }),
+    }));
+  return (
+    <div className="wp-ob-back">
+      <div className="wp-ob" role="dialog" aria-modal="true">
+        <RingsLogo className="wp-ob-rings" />
+        <h2 className="wp-ob-title">Welkom bij Weddy</h2>
+        <p className="wp-ob-sub">Vul een paar gegevens in om te starten. Gasten, budget en taken voeg je daarna zelf toe.</p>
+        <label className="wp-ob-lab">Namen</label>
+        <div className="wp-ob-names">
+          <input className="wp-ob-input" placeholder="Naam 1" value={a} onChange={(e) => setA(e.target.value)} />
+          <span className="wp-ob-amp">&amp;</span>
+          <input className="wp-ob-input" placeholder="Naam 2" value={b} onChange={(e) => setB(e.target.value)} />
+        </div>
+        <label className="wp-ob-lab">Trouwdatum</label>
+        <input className="wp-ob-input" type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        <label className="wp-ob-lab">Budget (optioneel)</label>
+        <input className="wp-ob-input" type="number" placeholder="bijv. 20000" value={budget} onChange={(e) => setBudget(e.target.value)} />
+        <div className="wp-ob-actions">
+          <button className="wp-ob-skip" onClick={() => finish(true)}>Overslaan</button>
+          <button className="wp-ob-go" onClick={() => finish(false)}>Aan de slag</button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -649,13 +626,13 @@ export default function App() {
   const allTasks = useMemo(() => {
     const edits = data.taskEdits || {};
     const removed = data.taskRemoved || {};
-    return [...TASKS, ...data.customTasks]
+    return [...(data.showDemoTasks ? TASKS : []), ...data.customTasks]
       .filter((t) => !removed[t.id])
       .map((t) => (edits[t.id] ? { ...t, ...edits[t.id] } : t));
-  }, [data.customTasks, data.taskEdits, data.taskRemoved]);
+  }, [data.customTasks, data.taskEdits, data.taskRemoved, data.showDemoTasks]);
   const allGuests = useMemo(() => [...GUESTS, ...data.customGuests], [data.customGuests]);
 
-  const daysToGo = daysUntil(WEDDING_ISO);
+  const daysToGo = data.weddingDate ? daysUntil(data.weddingDate) : null;
 
   return (
     <div className="wp-root">
@@ -675,7 +652,7 @@ export default function App() {
         </div>
       )}
 
-      <Hero daysToGo={daysToGo} musicOn={musicOn} onToggleMusic={toggleMusic} tab={tab} setTab={setTab} />
+      <Hero daysToGo={daysToGo} musicOn={musicOn} onToggleMusic={toggleMusic} tab={tab} setTab={setTab} nameA={data.coupleA} nameB={data.coupleB} weddingDate={data.weddingDate} />
 
       <TabBar tab={tab} setTab={setTab} />
 
@@ -687,8 +664,10 @@ export default function App() {
         {loaded && tab === "schema" && <Schema data={data} setData={setData} />}
       </main>
 
+      {loaded && !intro && !data.onboarded && <Onboarding data={data} setData={setData} />}
+
       <footer className="wp-footer">
-        <img className="wp-footer-mark" src={LOGO_MARK} alt="N & S Vermeer" />
+        <CoupleCrest className="wp-footer-mark" nameA={data.coupleA} nameB={data.coupleB} />
       </footer>
     </div>
   );
@@ -709,7 +688,7 @@ function Sprig({ className }) {
   );
 }
 
-function Hero({ daysToGo, musicOn, onToggleMusic, tab, setTab }) {
+function Hero({ daysToGo, musicOn, onToggleMusic, tab, setTab, nameA, nameB, weddingDate }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const navTabs = [
     ["taken", "To Do"],
@@ -722,7 +701,7 @@ function Hero({ daysToGo, musicOn, onToggleMusic, tab, setTab }) {
       <div className="wp-hero-floral" aria-hidden="true" style={{ backgroundImage: `url(${FLORAL})` }} />
       <div className="wp-hero-wash" aria-hidden="true" />
       <nav className="wp-nav">
-        <img className="wp-nav-logo" src={LOGO_MARK} alt="N & S" />
+        <CoupleCrest className="wp-nav-logo" nameA={nameA} nameB={nameB} />
         <div className="wp-nav-right">
           <VinylButton playing={musicOn} onToggle={onToggleMusic} />
           <button className={"wp-burger" + (menuOpen ? " is-open" : "")} onClick={() => setMenuOpen((o) => !o)} aria-label="Menu" aria-expanded={menuOpen}>
@@ -746,14 +725,19 @@ function Hero({ daysToGo, musicOn, onToggleMusic, tab, setTab }) {
         )}
       </nav>
       <div className="wp-hero-body">
-        <CoupleCrest className="wp-logo" />
-        <h1 className="wp-names">Nick <span>&amp;</span> Sarah</h1>
+        <RingsLogo className="wp-hero-rings" />
+        <h1 className="wp-names">{nameA || "Naam"} <span>&amp;</span> {nameB || "Naam"}</h1>
         <div className="wp-countdown">
-          <span className="wp-count-num">{daysToGo > 0 ? daysToGo : daysToGo === 0 ? "Vandaag" : "0"}</span>
-          <span className="wp-count-label">{daysToGo > 1 ? "dagen te gaan" : daysToGo === 1 ? "dag te gaan" : daysToGo === 0 ? "het is zover" : "getrouwd"}</span>
+          {weddingDate ? (
+            <>
+              <span className="wp-count-num">{daysToGo > 0 ? daysToGo : daysToGo === 0 ? "Vandaag" : "0"}</span>
+              <span className="wp-count-label">{daysToGo > 1 ? "dagen te gaan" : daysToGo === 1 ? "dag te gaan" : daysToGo === 0 ? "het is zover" : "getrouwd"}</span>
+            </>
+          ) : (
+            <span className="wp-count-label">Trouwdatum nog niet ingesteld</span>
+          )}
         </div>
-        <p className="wp-date">19 september 2026</p>
-        <p className="wp-venues">Sint-Martinuskerk · Landhuis De Linde</p>
+        {weddingDate && <p className="wp-date">{longDate(weddingDate)}</p>}
       </div>
     </header>
   );
@@ -781,6 +765,14 @@ function TabBar({ tab, setTab }) {
 
 /* ---------- Tasks ---------- */
 
+function Trash() {
+  return (
+    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6" />
+    </svg>
+  );
+}
+
 function Tasks({ tasks, data, setData }) {
   const [ownerFilter, setOwnerFilter] = useState("Samen");
   const [catFilter, setCatFilter] = useState("Alle");
@@ -788,6 +780,8 @@ function Tasks({ tasks, data, setData }) {
   const [open, setOpen] = useState(null);
   const [editing, setEditing] = useState(null);
   const [adding, setAdding] = useState(false);
+  const [confirmClear, setConfirmClear] = useState(false);
+  const clearAll = () => { setData((d) => ({ ...d, customTasks: [], showDemoTasks: false, taskDone: {}, taskEdits: {}, taskRemoved: {} })); setConfirmClear(false); };
 
   const owners = ["Samen", "Nick", "Sarah"];
   const categories = [...new Set(tasks.map((t) => t.category))].sort((a, b) => a.localeCompare(b, "nl"));
@@ -844,6 +838,9 @@ function Tasks({ tasks, data, setData }) {
           ))}
           <button className={"wp-chip wp-chip-toggle" + (hideDone ? " is-on" : "")} onClick={() => setHideDone((v) => !v)}>
             {hideDone ? "Toon afgevinkt" : "Verberg afgevinkt"}
+          </button>
+          <button className={"wp-chip wp-chip-toggle" + (data.showDemoTasks ? " is-on" : "")} onClick={() => setData((d) => ({ ...d, showDemoTasks: !d.showDemoTasks }))}>
+            {data.showDemoTasks ? "Demo-taken aan" : "Demo-taken"}
           </button>
         </div>
         <FilterSelect
@@ -920,6 +917,20 @@ function Tasks({ tasks, data, setData }) {
         />
       ) : (
         <button className="wp-add-btn" onClick={() => setAdding(true)}>+ Taak toevoegen</button>
+      )}
+
+      {tasks.length > 0 && (
+        <div className="wp-clear-row">
+          {confirmClear ? (
+            <div className="wp-clear-confirm">
+              <span>Hele lijst legen?</span>
+              <button className="wp-btn-ghost" onClick={() => setConfirmClear(false)}>Annuleren</button>
+              <button className="wp-btn-danger" onClick={clearAll}>Legen</button>
+            </div>
+          ) : (
+            <button className="wp-clear-btn" onClick={() => setConfirmClear(true)} aria-label="Lijst legen"><Trash /> Lijst legen</button>
+          )}
+        </div>
       )}
 
       {editingTask && (
@@ -1635,7 +1646,7 @@ const CSS = `
 }
 .wp-hero-body{position:relative; z-index:2; padding:32px 24px 32px;}
 .wp-nav{position:relative; z-index:20; display:flex; align-items:center; justify-content:space-between; padding:10px 16px 12px; background:#fff;}
-.wp-nav-logo{width:30px; height:auto; opacity:.85;}
+.wp-nav-logo{width:46px; height:auto; opacity:.9;}
 .wp-nav-right{display:flex; align-items:center; gap:10px;}
 .wp-nav-line{position:absolute; left:0; right:0; bottom:0; height:4px; background:linear-gradient(to bottom, var(--brass) 0, var(--brass) 1px, transparent 1px, transparent 3px, var(--brass) 3px, var(--brass) 4px); animation:goldGlow 7s ease-in-out infinite;}
 @keyframes goldGlow{0%, 80%, 100%{filter:brightness(1); box-shadow:0 0 0 rgba(198,155,94,0);} 90%{filter:brightness(1.45) saturate(1.25); box-shadow:0 1px 9px rgba(198,155,94,.6);}}
@@ -1674,7 +1685,7 @@ const CSS = `
 .wp-intro::after{content:""; position:absolute; inset:14px; border:1.6px solid rgba(198,155,94,.72); border-radius:16px; z-index:3; pointer-events:none;}
 .wp-intro-art{position:absolute; inset:14px; z-index:0; overflow:hidden; border-radius:16px;}
 .wp-if-base{position:absolute; inset:0; background-size:cover; background-position:center; background-repeat:no-repeat;}
-.wp-if-corner{position:absolute; width:58%; height:52%; background-repeat:no-repeat; background-size:185% 200%;}
+.wp-if-corner{position:absolute; width:60%; height:55%; background-repeat:no-repeat; background-size:cover; background-position:center;}
 .ic-tl{top:0; left:0; background-position:left top;}
 .ic-tr{top:0; right:0; background-position:right top;}
 .ic-bl{bottom:0; left:0; background-position:left bottom;}
@@ -1941,7 +1952,26 @@ const CSS = `
 
 /* footer */
 .wp-footer{display:flex; justify-content:center; align-items:center; padding:24px 18px 34px;}
-.wp-footer-mark{width:30px; height:auto; opacity:.8;}
+.wp-footer-mark{width:44px; height:auto; opacity:.85;}
+.wp-hero-rings{display:block; margin:0 auto 8px; width:150px; height:auto; filter:drop-shadow(0 3px 8px rgba(58,46,44,.14));}
+.wp-clear-row{display:flex; justify-content:center; margin-top:2px;}
+.wp-clear-btn{display:inline-flex; align-items:center; gap:6px; padding:8px 14px; border:1px solid var(--line); background:transparent; color:var(--muted); border-radius:12px; font-size:13px; font-weight:600; cursor:pointer;}
+.wp-clear-btn:hover{color:var(--rose); border-color:var(--rose);}
+.wp-clear-confirm{display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:center; padding:10px 14px; border:1px solid var(--line); border-radius:12px; background:var(--paper2); font-size:14px; color:var(--ink);}
+.wp-btn-danger{padding:8px 16px; border:none; border-radius:10px; background:var(--rose); color:#fff; font-weight:600; font-size:14px; cursor:pointer;}
+.wp-ob-back{position:fixed; inset:0; z-index:900; background:rgba(58,46,44,.42); backdrop-filter:blur(3px); display:flex; align-items:center; justify-content:center; padding:20px;}
+.wp-ob{width:100%; max-width:400px; background:var(--paper); border:1px solid var(--line); border-radius:22px; box-shadow:0 24px 60px rgba(58,46,44,.28); padding:26px 24px 22px; text-align:center;}
+.wp-ob-rings{display:block; margin:0 auto 6px; width:110px; height:auto;}
+.wp-ob-title{margin:0 0 4px; font-family:'Fraunces',serif; font-weight:500; font-size:26px; color:var(--ink);}
+.wp-ob-sub{margin:0 0 18px; font-size:14px; line-height:1.5; color:var(--muted);}
+.wp-ob-lab{display:block; text-align:left; font-size:12px; font-weight:600; letter-spacing:.02em; color:var(--muted); margin:12px 2px 5px; text-transform:uppercase;}
+.wp-ob-input{width:100%; box-sizing:border-box; padding:11px 13px; border:1px solid var(--line); border-radius:12px; font-size:15px; background:#fff; color:var(--ink);}
+.wp-ob-names{display:flex; align-items:center; gap:8px;}
+.wp-ob-names .wp-ob-input{flex:1; min-width:0;}
+.wp-ob-amp{font-family:'Fraunces',serif; font-style:italic; font-size:20px; color:var(--rose);}
+.wp-ob-actions{display:flex; gap:10px; margin-top:20px;}
+.wp-ob-skip{flex:1; padding:12px; border:1px solid var(--line); background:transparent; border-radius:12px; font-weight:600; font-size:14px; color:var(--muted); cursor:pointer;}
+.wp-ob-go{flex:2; padding:12px; border:none; border-radius:12px; background:var(--ink); color:var(--paper); font-weight:600; font-size:15px; cursor:pointer;}
 
 /* schema */
 .wp-sched{display:flex; flex-direction:column;}
