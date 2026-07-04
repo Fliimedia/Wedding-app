@@ -681,15 +681,6 @@ function Onboarding({ data, setData, onBack }) {
 
   const HEART = "M100 165 C 32 116 22 74 54 52 C 79 36 100 53 100 74 C 100 53 121 36 146 52 C 178 74 168 116 100 165 Z";
 
-  const aiCreds = () => {
-    let provider = "anthropic", apiKey = "";
-    try {
-      provider = data.aiProvider || localStorage.getItem("weddy_ai_provider") || "anthropic";
-      apiKey = data.aiKey || localStorage.getItem("weddy_ai_key") || "";
-    } catch (e) {}
-    return { provider, apiKey };
-  };
-
   const finish = (skip) =>
     setData((d) => ({
       ...d,
@@ -706,7 +697,7 @@ function Onboarding({ data, setData, onBack }) {
     setErr(""); setBusy(true);
     try {
       const extracted = await extractFile(file);
-      const res = await fetch("/api/plan", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ mode: "import", ...aiCreds(), nameA: a, nameB: b, weddingDate: date, ...extracted }) });
+      const res = await fetch("/api/plan", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ mode: "import", nameA: a, nameB: b, weddingDate: date, ...extracted }) });
       const j = await res.json();
       if (!res.ok || j.error) throw new Error(j.error || "Er ging iets mis.");
       const p = j.plan || {}; p._gen = false;
@@ -719,7 +710,7 @@ function Onboarding({ data, setData, onBack }) {
     setErr(""); setBusy(true);
     try {
       const answers = OB_QUESTIONS.map((q, i) => ({ q: q.q, a: ans[i] || q.options[0] }));
-      const res = await fetch("/api/plan", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ mode: "generate", ...aiCreds(), tier, nameA: a, nameB: b, weddingDate: date, answers, wish1, wish2 }) });
+      const res = await fetch("/api/plan", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ mode: "generate", tier, nameA: a, nameB: b, weddingDate: date, answers, wish1, wish2 }) });
       const j = await res.json();
       if (!res.ok || j.error) throw new Error(j.error || "Er ging iets mis.");
       const p = j.plan || {}; p._gen = true;
@@ -894,10 +885,6 @@ function Onboarding({ data, setData, onBack }) {
             <span className="wp-ob-cardic">{ICON_SPARK}</span>
             <span className="wp-ob-cardtx"><b>Laat AI een plan maken</b><i>Beantwoord een paar vragen</i></span>
           </button>
-          <div className="wp-ob-ainote">
-            <span>Voor uploaden en AI moet je AI gekoppeld hebben.</span>
-            <ConnectAI trigger="inline" />
-          </div>
           <button className="wp-ob-back wp-ob-back-solo" onClick={() => setScreen("gegevens")}>Terug</button>
         </div>
       )}
@@ -970,58 +957,6 @@ const ICON_ROBOT = (
   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="4" y="8" width="16" height="11" rx="2.5" /><path d="M12 8V4" /><circle cx="12" cy="3" r="1" /><circle cx="9" cy="13" r="1.1" fill="currentColor" stroke="none" /><circle cx="15" cy="13" r="1.1" fill="currentColor" stroke="none" /><path d="M9.5 16.5h5" /></svg>
 );
 
-function ConnectAI({ trigger }) {
-  const [aiOpen, setAiOpen] = useState(false);
-  const [prov, setProv] = useState(() => { try { return localStorage.getItem("weddy_ai_provider") || "anthropic"; } catch (e) { return "anthropic"; } });
-  const [key, setKey] = useState(() => { try { return localStorage.getItem("weddy_ai_key") || ""; } catch (e) { return ""; } });
-  const [aiSaved, setAiSaved] = useState(false);
-  const saveAi = () => {
-    try {
-      if (key.trim()) { localStorage.setItem("weddy_ai_provider", prov); localStorage.setItem("weddy_ai_key", key.trim()); }
-      else { localStorage.removeItem("weddy_ai_key"); }
-      setAiSaved(true);
-      setTimeout(() => { setAiSaved(false); setAiOpen(false); }, 900);
-    } catch (ex) {}
-  };
-  return (
-    <>
-      {trigger === "inline"
-        ? <button className="wp-ai-robot" onClick={() => setAiOpen(true)} aria-label="AI koppelen">{ICON_ROBOT}<span>AI koppelen</span></button>
-        : <button className="wp-login-ai" onClick={() => setAiOpen(true)} aria-label="AI koppelen">{ICON_ROBOT}<span>Connect AI</span></button>}
-      {aiOpen && (
-        <div className="wp-modal-back" onClick={() => setAiOpen(false)}>
-          <div className="wp-modal" onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true">
-            <div className="wp-modal-head">
-              <span className="wp-modal-title">AI koppelen</span>
-              <button className="wp-modal-x" onClick={() => setAiOpen(false)} aria-label="Sluiten">\u00d7</button>
-            </div>
-            <p className="wp-ai-note">Koppel je eigen sleutel om een trouwplan te importeren of te laten genereren. De sleutel wordt alleen op dit apparaat bewaard.</p>
-            <div className="wp-ai-explain">
-              <p className="wp-ai-explain-h">De app doet twee soorten AI-verzoeken:</p>
-              <ol className="wp-ai-explain-list">
-                <li>Een trouwplan laten <b>maken</b> (genereren).</li>
-                <li>Een plan <b>omzetten</b> naar app-inhoud: to-do's, budget, dagschema en gastenlijst.</li>
-              </ol>
-              <div className="wp-ai-cost">
-                <div className="wp-ai-cost-row wp-ai-cost-head"><span>Kosten per verzoek</span><span>Plan maken</span><span>Omzetten</span></div>
-                <div className="wp-ai-cost-row"><span>Anthropic (Claude)</span><span>&euro;0,04-0,06</span><span>&euro;0,05-0,12</span></div>
-                <div className="wp-ai-cost-row"><span>OpenAI (ChatGPT)</span><span>&euro;0,03-0,04</span><span>&euro;0,03-0,08</span></div>
-              </div>
-              <p className="wp-ai-cost-note">Ruwe schatting op basis van lijstprijzen (juli 2026, Claude Sonnet 4.6 en GPT-4o) en gemiddeld tokengebruik. Omzetten kost meer bij grote documenten.</p>
-            </div>
-            <div className="wp-ai-provs">
-              <button className={"wp-ob-tier" + (prov === "anthropic" ? " is-on" : "")} onClick={() => setProv("anthropic")}><b>Anthropic</b><i>Claude</i></button>
-              <button className={"wp-ob-tier" + (prov === "openai" ? " is-on" : "")} onClick={() => setProv("openai")}><b>OpenAI</b><i>ChatGPT</i></button>
-            </div>
-            <input className="wp-ob-input wp-login-input" type="password" placeholder="API-sleutel" value={key} onChange={(e) => setKey(e.target.value)} />
-            <button className="wp-ob-go wp-login-go" onClick={saveAi}>{aiSaved ? "Opgeslagen" : "Opslaan"}</button>
-          </div>
-        </div>
-      )}
-    </>
-  );
-}
-
 function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [pin, setPin] = useState("");
@@ -1041,7 +976,6 @@ function Login({ onLogin }) {
 
   return (
     <div className="wp-login">
-      <ConnectAI trigger="pill" />
       <div className="wp-login-card">
         <img className="wp-login-rings" src={RINGS_IMG} alt="Trouwringen" />
         <span className="wp-login-step">Stap 1 van 3</span>
