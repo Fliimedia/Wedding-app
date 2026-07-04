@@ -739,7 +739,7 @@ function Onboarding({ data, setData, onBack }) {
       if (!guestSrc.length && bd.length) {
         bd.forEach((gb) => {
           const grp = gb.group || gb.label || gb.categorie || gb.category || "Gasten";
-          const sd = gb.side || nA || "Partner 1";
+          const sd = "A";
           const cnt = Math.max(0, Math.min(60, Math.round(gb.count || gb.aantal || gb.n || 0)));
           for (let k = 0; k < cnt; k++) guestSrc.push({ name: grp + " " + (k + 1), category: grp, side: sd, inv: true, pres: false });
         });
@@ -754,7 +754,7 @@ function Onboarding({ data, setData, onBack }) {
         budget: plan.budget || (budget ? Math.round(parseFloat(budget)) : 0) || d.budget,
         customTasks: [...d.customTasks, ...((plan.tasks) || []).map((t, i) => ({ id: "ai" + now + "_" + i, name: t.name || "Taak", category: t.category || "Planning & logistiek", owner: t.owner || "Samen", deadline: t.deadline || wd || "", details: t.details || "" }))],
         posten: [...d.posten, ...((plan.posten) || []).map((p, i) => ({ id: "aip" + now + "_" + i, name: p.name || "Post", amount: Math.round(p.amount) || 0 }))],
-        customGuests: [...d.customGuests, ...guestSrc.map((g, i) => ({ id: "aig" + now + "_" + i, name: g.name || "Gast", category: g.category || "Familie & vrienden", side: g.side || nA || "Partner 1", inv: g.inv !== false, pres: !!g.pres }))],
+        customGuests: [...d.customGuests, ...guestSrc.map((g, i) => ({ id: "aig" + now + "_" + i, name: g.name || "Gast", category: g.category || "Familie & vrienden", side: g.side || "A", inv: g.inv !== false, pres: !!g.pres }))],
         schedule: (plan.schedule && plan.schedule.length) ? [{ phase: "Dagschema", rows: plan.schedule.map((sc, i) => ({ id: "ais" + i, time: sc.time || "", what: sc.title || sc.what || "", travel: null, roles: ["paar"] })) }] : d.schedule,
       };
     });
@@ -1989,7 +1989,7 @@ function Guests({ guests, data, setData }) {
   const [adding, setAdding] = useState(false);
   const [name, setName] = useState("");
   const [cat, setCat] = useState("Vrienden");
-  const [side, setSide] = useState("Nick");
+  const [side, setSide] = useState("A");
 
   // effective marks: stored override wins over the document's seeded value
   const inv = (g) => (data.guestInv[g.id] !== undefined ? data.guestInv[g.id] : !!g.inv);
@@ -2000,7 +2000,14 @@ function Guests({ guests, data, setData }) {
   const invited = guests.filter(inv).length;
   const present = guests.filter(pres).length;
 
-  const sides = [data.coupleA || "Partner 1", data.coupleB || "Partner 2"];
+  const slotName = { A: data.coupleA || "Partner 1", B: data.coupleB || "Partner 2" };
+  const slotOf = (g) => {
+    const sd = g.side;
+    if (sd === "B" || sd === "Sarah") return "B";
+    if (sd === "A" || sd === "Nick") return "A";
+    if (data.coupleB && sd === data.coupleB) return "B";
+    return "A";
+  };
 
   return (
     <div className="wp-stack">
@@ -2010,8 +2017,8 @@ function Guests({ guests, data, setData }) {
         <div className="wp-gs-cell"><span className="wp-gs-num">{guests.length}</span><span className="wp-gs-lab">op de lijst</span></div>
       </section>
 
-      {sides.map((s) => {
-        const sideGuests = guests.filter((g) => (g.side || "Nick") === s);
+      {["A", "B"].map((slot) => {
+        const sideGuests = guests.filter((g) => slotOf(g) === slot);
         const sInvited = sideGuests.filter(inv).length;
         const sPresent = sideGuests.filter(pres).length;
         const cats = {};
@@ -2019,10 +2026,10 @@ function Guests({ guests, data, setData }) {
         const sortedCats = Object.keys(cats).sort((a, b) => ((CAT_ORDER.indexOf(a) + 1) || 99) - ((CAT_ORDER.indexOf(b) + 1) || 99));
         return (
           <Collapsible
-            key={s}
-            title={s === "Nick" ? "Bruidegom · Nick" : "Bruid · Sarah"}
+            key={slot}
+            title={(slot === "A" ? "Bruidegom · " : "Bruid · ") + slotName[slot]}
             total={sideGuests.length}
-            defaultOpen={s === "Nick"}
+            defaultOpen={slot === "A"}
             status={sideGuests.length === 0 ? "Nog toe te voegen" : `${sInvited} uitgenodigd · ${sPresent} aanwezig`}
           >
             {sortedCats.map((c) => (
@@ -2054,8 +2061,8 @@ function Guests({ guests, data, setData }) {
           <input className="wp-input" placeholder="Naam gast" value={name} onChange={(e) => setName(e.target.value)} />
           <div className="wp-addrow">
             <select className="wp-input" value={side} onChange={(e) => setSide(e.target.value)}>
-              <option value="Nick">Van Nick</option>
-              <option value="Sarah">Van Sarah</option>
+              <option value="A">Van {slotName.A}</option>
+              <option value="B">Van {slotName.B}</option>
             </select>
             <select className="wp-input" value={cat} onChange={(e) => setCat(e.target.value)}>
               {CAT_ORDER.map((o) => <option key={o}>{o}</option>)}
