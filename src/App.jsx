@@ -1575,20 +1575,58 @@ function EditableText({ value, onSave, className, multiline, placeholder }) {
   );
 }
 
-function InlineAdd({ placeholder, withCategory, categories, onAdd, onCancel }) {
+function EditableName({ value, onSave }) {
+  const [editing, setEditing] = useState(false);
+  const [v, setV] = useState(value || "");
+  const commit = () => { const t = v.trim(); if (t) onSave(t); setEditing(false); };
+  if (editing) {
+    return (
+      <input
+        className="wp-name-input"
+        autoFocus
+        value={v}
+        onChange={(e) => setV(e.target.value)}
+        onBlur={commit}
+        onKeyDown={(e) => { if (e.key === "Enter") commit(); if (e.key === "Escape") setEditing(false); }}
+      />
+    );
+  }
+  return (
+    <button className="wp-name-edit" onClick={() => { setV(value || ""); setEditing(true); }}>
+      <span className="wp-name-txt">{value}</span><span className="wp-name-pen">✎</span>
+    </button>
+  );
+}
+
+function InlineAdd({ placeholder, withCategory, categories, withAmount, onAdd, onCancel }) {
   const [name, setName] = useState("");
   const [cat, setCat] = useState(categories ? categories[0] : "");
+  const [amt, setAmt] = useState("");
+  const parseAmt = () => {
+    let r = amt.trim().replace(/\s/g, "");
+    if (r === "") return 0;
+    r = r.includes(",") ? r.replace(/\./g, "").replace(",", ".") : r;
+    const n = parseFloat(r);
+    return isNaN(n) ? 0 : n;
+  };
+  const submit = () => { if (name.trim()) onAdd(name.trim(), withAmount ? parseAmt() : cat); };
   return (
     <div className="wp-card wp-addform" style={{ marginTop: 10 }}>
-      <input className="wp-input" placeholder={placeholder} value={name} onChange={(e) => setName(e.target.value)} />
+      <input className="wp-input" placeholder={placeholder} value={name} onChange={(e) => setName(e.target.value)} autoFocus />
       {withCategory && (
         <select className="wp-input" value={cat} onChange={(e) => setCat(e.target.value)}>
           {categories.map((c) => <option key={c}>{c}</option>)}
         </select>
       )}
+      {withAmount && (
+        <div className="wp-amt-field">
+          <span className="wp-amt-eur">&euro;</span>
+          <input className="wp-input" type="text" inputMode="decimal" placeholder="Bedrag (optioneel)" value={amt} onChange={(e) => setAmt(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") submit(); }} />
+        </div>
+      )}
       <div className="wp-addrow">
         <button className="wp-btn-ghost" onClick={onCancel}>Annuleren</button>
-        <button className="wp-btn" disabled={!name.trim()} onClick={() => onAdd(name.trim(), cat)}>Toevoegen</button>
+        <button className="wp-btn" disabled={!name.trim()} onClick={submit}>Toevoegen</button>
       </div>
     </div>
   );
@@ -1820,7 +1858,8 @@ function Budget({ data, setData }) {
   const setPostAmount = (id, amount) =>
     setData((d) => ({ ...d, posten: d.posten.map((p) => (p.id === id ? { ...p, amount: amount == null ? 0 : amount } : p)) }));
   const removePost = (id) => setData((d) => ({ ...d, posten: d.posten.filter((p) => p.id !== id) }));
-  const addPostItem = (name) => setData((d) => ({ ...d, posten: [...d.posten, { id: "pn" + Date.now(), name, amount: 0 }] }));
+  const addPostItem = (name, amount) => setData((d) => ({ ...d, posten: [...d.posten, { id: "pn" + Date.now(), name, amount: amount || 0 }] }));
+  const renamePost = (id, name) => setData((d) => ({ ...d, posten: d.posten.map((p) => (p.id === id ? { ...p, name } : p)) }));
   const addSibizItem = (name, category) => setData((d) => ({ ...d, sibizCustom: [...d.sibizCustom, { id: "sc" + Date.now(), name, category: category || "Overig", amount: 0 }] }));
   const addOfferteGroup = (name) => setData((d) => ({ ...d, offertes: [...d.offertes, { id: "of" + Date.now(), name, paidPct: 0, lines: [] }] }));
   const removeOfferte = (gid) => setData((d) => ({ ...d, offertes: d.offertes.filter((g) => g.id !== gid) }));
@@ -1831,7 +1870,9 @@ function Budget({ data, setData }) {
         g.id !== gid ? g : { ...g, lines: amount == null ? g.lines.filter((l) => l.id !== lid) : g.lines.map((l) => (l.id === lid ? { ...l, amount } : l)) }
       ),
     }));
-  const addOfferteLine = (gid, name) => setData((d) => ({ ...d, offertes: d.offertes.map((g) => (g.id !== gid ? g : { ...g, lines: [...g.lines, { id: "ol" + Date.now(), name, amount: 0 }] })) }));
+  const addOfferteLine = (gid, name, amount) => setData((d) => ({ ...d, offertes: d.offertes.map((g) => (g.id !== gid ? g : { ...g, lines: [...g.lines, { id: "ol" + Date.now(), name, amount: amount || 0 }] })) }));
+  const renameOfferte = (gid, name) => setData((d) => ({ ...d, offertes: d.offertes.map((g) => (g.id === gid ? { ...g, name } : g)) }));
+  const renameOfferteLine = (gid, lid, name) => setData((d) => ({ ...d, offertes: d.offertes.map((g) => (g.id !== gid ? g : { ...g, lines: g.lines.map((l) => (l.id === lid ? { ...l, name } : l)) })) }));
   const setOffertePct = (gid, pct) => setData((d) => ({ ...d, offertes: d.offertes.map((g) => (g.id === gid ? { ...g, paidPct: pct } : g)) }));
 
   const sibFill = t.sib ? Math.min(t.sibPaid / t.sib, 1) : 0;
@@ -1898,10 +1939,14 @@ function Budget({ data, setData }) {
               <span><b>{euro((gTotal * (g.paidPct || 0)) / 100)}</b> voldaan</span>
               <button className="wp-delx" style={{ marginLeft: "auto" }} onClick={() => removeOfferte(g.id)} aria-label="Verwijder offerte">verwijder ×</button>
             </div>
+            <div className="wp-of-name">
+              <span className="wp-of-name-lab">Naam offerte</span>
+              <EditableName value={g.name} onSave={(n) => renameOfferte(g.id, n)} />
+            </div>
             <ul className="wp-budget-list">
               {g.lines.map((l) => (
                 <li key={l.id} className="wp-budget-row">
-                  <span className="wp-budget-name">{l.name}</span>
+                  <span className="wp-budget-name"><EditableName value={l.name} onSave={(n) => renameOfferteLine(g.id, l.id, n)} /></span>
                   <span className="wp-row-r">
                     <EditableAmount value={l.amount > 0 ? l.amount : null} emptyLabel="te begroten" allowClear onSave={(n) => setOfferteLine(g.id, l.id, n)} />
                     <button className="wp-delx" onClick={() => setOfferteLine(g.id, l.id, null)} aria-label="Verwijder regel">×</button>
@@ -1911,7 +1956,7 @@ function Budget({ data, setData }) {
               {g.lines.length === 0 && <li className="wp-empty">Nog geen regels.</li>}
             </ul>
             {addLineFor === g.id ? (
-              <InlineAdd placeholder="Naam regel" onAdd={(name) => { addOfferteLine(g.id, name); setAddLineFor(null); }} onCancel={() => setAddLineFor(null)} />
+              <InlineAdd placeholder="Naam regel" withAmount onAdd={(name, amount) => { addOfferteLine(g.id, name, amount); setAddLineFor(null); }} onCancel={() => setAddLineFor(null)} />
             ) : (
               <button className="wp-add-sm" onClick={() => setAddLineFor(g.id)}>+ Regel toevoegen</button>
             )}
@@ -1925,7 +1970,7 @@ function Budget({ data, setData }) {
           <ul className="wp-budget-list">
             {bevestigd.map((p) => (
               <li key={p.id} className="wp-budget-row">
-                <span className="wp-budget-name">{p.name}{p.taskId && <span className="wp-tasklink">taak</span>}</span>
+                <span className="wp-budget-name"><EditableName value={p.name} onSave={(n) => renamePost(p.id, n)} />{p.taskId && <span className="wp-tasklink">taak</span>}</span>
                 <span className="wp-row-r">
                   <EditableAmount value={p.amount > 0 ? p.amount : null} emptyLabel="te begroten" allowClear onSave={(n) => setPostAmount(p.id, n)} />
                   <button className="wp-confirm-btn is-undo" title="Terug naar begroting" aria-label="Terug naar begroting" onClick={() => unconfirmPost(p.id)}>↩</button>
@@ -1949,7 +1994,7 @@ function Budget({ data, setData }) {
         <ul className="wp-budget-list">
           {begroting.map((p) => (
             <li key={p.id} className="wp-budget-row">
-              <span className="wp-budget-name">{p.name}{p.taskId && <span className="wp-tasklink">taak</span>}</span>
+              <span className="wp-budget-name"><EditableName value={p.name} onSave={(n) => renamePost(p.id, n)} />{p.taskId && <span className="wp-tasklink">taak</span>}</span>
               <span className="wp-row-r">
                 <EditableAmount value={p.amount > 0 ? p.amount : null} emptyLabel="te begroten" allowClear onSave={(n) => setPostAmount(p.id, n)} />
                 <button className="wp-confirm-btn" title="Bevestig als offerte" aria-label="Bevestig als offerte" onClick={() => confirmPost(p.id)} disabled={!(p.amount > 0)}>✓</button>
@@ -1959,7 +2004,7 @@ function Budget({ data, setData }) {
           ))}
         </ul>
         {addPost ? (
-          <InlineAdd placeholder="Naam kostenpost (bijv. Fotograaf)" onAdd={(name) => { addPostItem(name); setAddPost(false); }} onCancel={() => setAddPost(false)} />
+          <InlineAdd placeholder="Naam kostenpost (bijv. Fotograaf)" withAmount onAdd={(name, amount) => { addPostItem(name, amount); setAddPost(false); }} onCancel={() => setAddPost(false)} />
         ) : (
           <button className="wp-add-sm" onClick={() => setAddPost(true)}>+ Kostenpost toevoegen</button>
         )}
@@ -2356,7 +2401,16 @@ const CSS = `
 .wp-budget-list{list-style:none; margin:0; padding:0;}
 .wp-budget-row{display:flex; justify-content:space-between; align-items:center; gap:10px; padding:9px 0; border-top:1px solid var(--line);}
 .wp-budget-row:first-child{border-top:none;}
-.wp-budget-name{font-size:13.5px; flex:1;}
+.wp-budget-name{font-size:13.5px; flex:1; min-width:0;}
+.wp-name-edit{display:inline-flex; align-items:center; gap:6px; max-width:100%; background:none; border:none; padding:0; margin:0; font:inherit; color:inherit; text-align:left; cursor:pointer;}
+.wp-name-txt{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.wp-name-pen{flex:none; opacity:.35; font-size:11px;}
+.wp-name-input{font:inherit; padding:4px 8px; border:1px solid var(--line); border-radius:9px; width:100%; max-width:230px; box-sizing:border-box; background:#fff;}
+.wp-amt-field{display:flex; align-items:center; gap:8px;}
+.wp-amt-eur{color:var(--muted); font-size:15px;}
+.wp-amt-field .wp-input{flex:1;}
+.wp-of-name{display:flex; align-items:center; gap:8px; padding:2px 0 8px; font-size:13.5px;}
+.wp-of-name-lab{color:var(--muted); font-size:12px; font-weight:600; flex:none;}
 .wp-budget-amt{border:none; background:#f6efe9; padding:5px 10px; border-radius:8px; font-weight:700; font-size:13.5px; color:var(--ink); white-space:nowrap;}
 .wp-fineprint{font-size:12px; color:var(--muted); line-height:1.5; padding:0 4px;}
 
