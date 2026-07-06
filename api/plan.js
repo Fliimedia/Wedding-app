@@ -119,12 +119,18 @@ export default async function handler(req, res) {
   }
   const body =
     typeof req.body === "string" ? JSON.parse(req.body || "{}") : req.body || {};
-  const provider = body.provider === "openai" ? "openai" : "anthropic";
   const userKey = typeof body.apiKey === "string" ? body.apiKey.trim() : "";
-  const apiKey =
-    userKey ||
-    (provider === "openai" ? process.env.OPENAI_API_KEY : process.env.ANTHROPIC_API_KEY) ||
-    "";
+  // Zonder door de gebruiker meegestuurde sleutel gebruiken we altijd de
+  // server-Anthropic-sleutel, ongeacht wat de client stuurt (voorkomt fouten
+  // door verouderde/gecachte clients die nog "openai" meesturen).
+  let provider, apiKey;
+  if (userKey) {
+    provider = body.provider === "openai" ? "openai" : "anthropic";
+    apiKey = userKey;
+  } else {
+    provider = "anthropic";
+    apiKey = process.env.ANTHROPIC_API_KEY || "";
+  }
   if (!apiKey) {
     return res.status(500).json({
       error:
