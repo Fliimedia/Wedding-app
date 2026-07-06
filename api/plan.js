@@ -128,7 +128,7 @@ export default async function handler(req, res) {
   if (!apiKey) {
     return res.status(500).json({
       error:
-        "Geen AI-sleutel gevonden. Koppel je eigen sleutel via 'Connect AI', of stel ANTHROPIC_API_KEY in als Environment Variable in Vercel.",
+        "Geen AI-sleutel gevonden op de server. Controleer dat ANTHROPIC_API_KEY in Vercel is ingesteld voor de juiste omgeving (Production en Preview) en deploy daarna opnieuw.",
     });
   }
 
